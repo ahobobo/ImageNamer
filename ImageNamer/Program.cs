@@ -1,3 +1,3 @@
-﻿using System;
+using ImageNamer.Cli;
 
-Console.WriteLine("Hello, World!");
+await ImageRenameCli.RunAsync(args);

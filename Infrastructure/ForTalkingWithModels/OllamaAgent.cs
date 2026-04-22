@@ -2,6 +2,7 @@
 using Application.Ports.Driven;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using OllamaSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,10 +25,9 @@ namespace Infrastructure.ForTalkingWithModels
 
         public OllamaAgent()
         {
-            // 1. Initialize the Ollama Chat Client with the local endpoint and model
-            var chatClient = new OllamaChatClient(
-                new Uri("http://localhost:11434"),
-                modelId: "gemma4:e4b");
+            // 1. Initialize the Ollama Client from OllamaSharp
+            var uri = new Uri("http://localhost:11434");
+            var chatClient = new OllamaApiClient(uri, defaultModel: "gemma4:e4b");
 
             // 2. Create the Agent from the chat client
             _agent = chatClient.AsAIAgent(instructions: Instructions);
@@ -53,6 +53,12 @@ namespace Infrastructure.ForTalkingWithModels
             var response = await _agent.RunAsync(message);
             
             string newName = response.Text.Trim();
+
+            // Ensure the extension is preserved if the model forgot it
+            if (!newName.EndsWith(originalImageFile.Extension, StringComparison.OrdinalIgnoreCase))
+            {
+                newName = Path.ChangeExtension(newName, originalImageFile.Extension);
+            }
 
             return originalImageFile with { Name = newName };
         }
