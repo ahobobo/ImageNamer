@@ -2,5 +2,4 @@
   <Project Path="Application/Application.csproj" Id="6af337eb-f438-48c5-9d1f-1ed4ef3f6e5a" />
   <Project Path="ApplicationTests/ApplicationTests.csproj" Id="e1c3240b-8dce-4e9a-b1c8-dee33400efa9" />
   <Project Path="Console/Console.csproj" Id="e60daa4b-fc7f-4fe5-96c8-b96b3d2b01e5" />
-  <Project Path="ImageNamer/ImageNamer.csproj" />
 </Solution>
