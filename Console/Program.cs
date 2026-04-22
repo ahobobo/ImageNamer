@@ -1,15 +1,25 @@
-using Application;
-using Application.Ports;
-using Application.Ports.Driving;
-
-if (args.Length > 0 && args[0].ToLower() == "getzero")
+if (args.Length > 0)
 {
-    IImageNamerApp app = new ImageNamer();
-    IForGettingZero getter = app.GetZero();
-    int result = getter.GetZero();
-    Console.WriteLine(result);
+    string filePath = args[0];
+    if (File.Exists(filePath))
+    {
+        byte[] fileBytes = File.ReadAllBytes(filePath);
+        string base64String = Convert.ToBase64String(fileBytes);
+        Console.WriteLine(base64String);
+    }
+    else
+    {
+        Console.WriteLine($"Error: File not found at {filePath}");
+        PrintUsage();
+    }
 }
 else
 {
-    Console.WriteLine("Usage: Console getzero");
+    PrintUsage();
+}
+
+static void PrintUsage()
+{
+    Console.WriteLine("Usage:");
+    Console.WriteLine("  Console <file_path>");
 }
