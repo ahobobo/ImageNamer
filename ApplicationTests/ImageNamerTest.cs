@@ -6,7 +6,7 @@ namespace ApplicationTests
 {
     public class Tests
     {
-        private ImageNamer _imageNamer;
+        private AppFromDrivenSide _imageNamer;
         [SetUp]
         public void Setup()
         {

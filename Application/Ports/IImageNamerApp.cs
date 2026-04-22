@@ -1,4 +1,4 @@
-﻿using Application.Ports.Driving;
+﻿using Application.Ports.Driven;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +12,12 @@ namespace Application.Ports
     /// </summary>
     public interface IImageNamerApp
     {
-        IForGettingZero GetZero();
-    }
+        static IImageNamerApp Create(IForInteractingWithFile forReadingImages)
+        {
+            return new AppFromDrivenSide(forReadingImages);
+        }
+
+    };
+
+
 }
