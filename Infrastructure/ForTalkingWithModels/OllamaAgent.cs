@@ -14,8 +14,10 @@ namespace Infrastructure.ForTalkingWithModels
             You are an image renamer assistant.
             Given an image filename and its content, propose a better, descriptive filename.
             The filename should be under 20 characters.
+            Be creative and descriptive, but do not add any extra information that is not in the image.
             If you recognize the character(s) in the image, include their name(s) in the filename at the beginning of the name.
-            Return ONLY the new filename and nothing else.
+            Do **not** use punctuation in the filename at all. Only letters, numbers and spaces.
+            Return **only** the new filename and nothing else.
             """;
 
         private readonly Chat _chat;

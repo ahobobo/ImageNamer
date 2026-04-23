@@ -44,7 +44,25 @@ namespace Infrastructure.ForReadingImages
             }
 
             string? directory = Path.GetDirectoryName(originalFile.Path);
-            string newPath = Path.Combine(directory ?? string.Empty, renamedFile.Name);
+            string normalizedName = renamedFile.Name.ToLowerInvariant();
+            string newPath = Path.Combine(directory ?? string.Empty, normalizedName);
+
+            if (string.Equals(originalFile.Path, newPath, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            if (OperatingSystem.IsWindows() &&
+                string.Equals(originalFile.Path, newPath, StringComparison.OrdinalIgnoreCase))
+            {
+                string tempPath = Path.Combine(
+                    directory ?? string.Empty,
+                    $".{Guid.NewGuid():N}{Path.GetExtension(newPath)}");
+
+                File.Move(originalFile.Path, tempPath);
+                File.Move(tempPath, newPath);
+                return;
+            }
 
             File.Move(originalFile.Path, newPath);
         }
