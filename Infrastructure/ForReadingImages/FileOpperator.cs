@@ -8,8 +8,6 @@ namespace Infrastructure.ForReadingImages
 {
     public class FileOpperator : IForInteractingWithFile
     {
-        private readonly string[] _supportedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-
         public ImageFile ReadFile(string path)
         {
             if (!File.Exists(path))
@@ -18,7 +16,7 @@ namespace Infrastructure.ForReadingImages
             }
 
             string extension = Path.GetExtension(path).ToLowerInvariant();
-            if (!_supportedExtensions.Contains(extension))
+            if (!ImageFileExtensions.IsSupportedExtension(extension))
             {
                 throw new NotSupportedException($"File extension '{extension}' is not supported as an image.");
             }

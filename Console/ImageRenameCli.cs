@@ -16,22 +16,16 @@ public static class ImageRenameCli
             return;
         }
 
-        string filePath = args[0];
-
-        if (!File.Exists(filePath))
-        {
-            Console.Error.WriteLine($"Error: File not found at {filePath}");
-            PrintUsage();
-            Environment.ExitCode = 1;
-            return;
-        }
-
         IForRenamingImage renamer = new ImageRenamer(new FileOpperator(), new OllamaAgent());
+        var runner = new ImageRenameRunner(renamer);
 
         try
         {
-            await renamer.RenameImageAsync(filePath);
-            Console.WriteLine("Image renamed successfully.");
+            ImageRenameRunResult result = await runner.RunAsync(args[0]);
+            if (result.FailureCount > 0)
+            {
+                Environment.ExitCode = 1;
+            }
         }
         catch (Exception ex)
         {
@@ -42,7 +36,17 @@ public static class ImageRenameCli
 
     private static void PrintUsage()
     {
-        Console.WriteLine("Usage:");
-        Console.WriteLine("  <executable> <file_path>");
+        Console.WriteLine(GetUsageText());
+    }
+
+    public static string GetUsageText()
+    {
+        return """
+            Usage:
+              <executable> <file_path>
+              <executable> <directory_path>
+
+            Renames a single image file or every supported image found recursively in a directory.
+            """;
     }
 }
