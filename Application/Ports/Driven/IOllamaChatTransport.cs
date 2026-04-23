@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Infrastructure.ForTalkingWithModels
+namespace Application.Ports.Driven
 {
     public interface IOllamaChatTransport
     {

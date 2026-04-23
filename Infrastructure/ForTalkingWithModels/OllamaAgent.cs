@@ -1,10 +1,7 @@
 using Application.Models;
 using Application.Ports.Driven;
-using OllamaSharp;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,17 +26,12 @@ namespace Infrastructure.ForTalkingWithModels
             """;
 
         private readonly IOllamaChatTransport _chatTransport;
+        private readonly IForValidatingFileNames _fileNameValidator;
 
-        public OllamaAgent()
-        {
-            var uri = new Uri("http://localhost:11434");
-            var client = new OllamaApiClient(uri, defaultModel: "gemma4:e4b");
-            _chatTransport = new OllamaChatTransport(new Chat(client, Instructions));
-        }
-
-        public OllamaAgent(IOllamaChatTransport chatTransport)
+        public OllamaAgent(IOllamaChatTransport chatTransport, IForValidatingFileNames fileNameValidator)
         {
             _chatTransport = chatTransport;
+            _fileNameValidator = fileNameValidator;
         }
 
         public async Task<ImageFile> GetNewImageNameAsync(ImageFile originalImageFile)
@@ -93,16 +85,10 @@ namespace Infrastructure.ForTalkingWithModels
             return generatedName.ToString().Trim();
         }
 
-        private static bool IsValidGeneratedName(string generatedName, string extension)
+        private bool IsValidGeneratedName(string generatedName, string extension)
         {
             string nameWithoutExtension = RemoveExpectedExtension(generatedName, extension);
-
-            if (string.IsNullOrWhiteSpace(nameWithoutExtension))
-            {
-                return false;
-            }
-
-            return nameWithoutExtension.All(IsAllowedNameCharacter);
+            return _fileNameValidator.IsValidFileName(nameWithoutExtension);
         }
 
         private static string NormalizeGeneratedName(string generatedName, string extension)
@@ -121,29 +107,5 @@ namespace Infrastructure.ForTalkingWithModels
             return generatedName;
         }
 
-        private static bool IsAllowedNameCharacter(char character)
-        {
-            return char.IsLetterOrDigit(character) || character == ' ';
-        }
-
-        private sealed class OllamaChatTransport : IOllamaChatTransport
-        {
-            private readonly Chat _chat;
-
-            public OllamaChatTransport(Chat chat)
-            {
-                _chat = chat;
-            }
-
-            public IAsyncEnumerable<string> SendAsync(string systemInstructions, string prompt, IReadOnlyList<string> images)
-            {
-                if (!string.Equals(systemInstructions, Instructions, StringComparison.Ordinal))
-                {
-                    throw new InvalidOperationException("Unexpected system instructions for Ollama chat.");
-                }
-
-                return _chat.SendAsync(prompt, images.ToArray());
-            }
-        }
     }
 }

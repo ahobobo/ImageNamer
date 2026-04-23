@@ -1,7 +1,8 @@
 using Application;
+using Application.Ports.Driven;
 using Application.Ports.Driving;
 using Infrastructure.ForReadingImages;
-using Infrastructure.ForTalkingWithModels;
+using ImageNamer.Cli.Factories;
 
 namespace ImageNamer.Cli;
 
@@ -16,7 +17,8 @@ public static class ImageRenameCli
             return;
         }
 
-        IForRenamingImage renamer = new ImageRenamer(new FileOpperator(), new OllamaAgent());
+        IForTalkingWithModel model = OllamaAgentFactory.Create();
+        IForRenamingImage renamer = new ImageRenamer(new FileOpperator(), model);
         var runner = new ImageRenameRunner(renamer);
 
         try

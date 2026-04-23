@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Models;
+using Application.Ports.Driven;
 using Infrastructure.ForReadingImages;
 using Infrastructure.ForTalkingWithModels;
+using Infrastructure.Validation;
 
 namespace ApplicationTests;
 
@@ -18,7 +20,7 @@ public class OllamaAgentTests
         var transport = new RecordingOllamaChatTransport(
             "Bellwether: Zootopia.webp",
             "Bellwether Zootopia");
-        var sut = new OllamaAgent(transport);
+        var sut = new OllamaAgent(transport, new FileNameValidator());
 
         ImageFile renamedImage = await sut.GetNewImageNameAsync(originalImage);
 
