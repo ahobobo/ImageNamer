@@ -9,22 +9,8 @@ namespace Infrastructure.ForReadingImages
     {
         public ImageFile ReadFile(string path)
         {
-            // We use a relative path that works from the project root or when running tests.
-            // In a real stub, we might want more robust path resolution.
             string fileName = "Bellwether_Zootopia.webp";
-            string testDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", fileName);
-
-            if (!File.Exists(testDataPath))
-            {
-                // Try to find it in the current directory if BaseDirectory doesn't have it
-                testDataPath = Path.Combine(Directory.GetCurrentDirectory(), "TestData", fileName);
-            }
-
-            if (!File.Exists(testDataPath))
-            {
-                // Last resort for typical .NET build output structure
-                testDataPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "TestData", fileName);
-            }
+            string testDataPath = ResolveTestDataPath(fileName);
 
             byte[] imageBytes = File.ReadAllBytes(testDataPath);
             string base64Content = Convert.ToBase64String(imageBytes);
@@ -36,6 +22,30 @@ namespace Infrastructure.ForReadingImages
         public void RenameFile(ImageFile originalFile, ImageFile renamedFile)
         {
             // Stub implementation: do nothing
+        }
+
+        private static string ResolveTestDataPath(string fileName)
+        {
+            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            for (int i = 0; i < 8; i++)
+            {
+                string candidatePath = Path.Combine(currentDirectory, "TestData", fileName);
+                if (File.Exists(candidatePath))
+                {
+                    return candidatePath;
+                }
+
+                DirectoryInfo? parent = Directory.GetParent(currentDirectory);
+                if (parent is null)
+                {
+                    break;
+                }
+
+                currentDirectory = parent.FullName;
+            }
+
+            throw new FileNotFoundException($"Could not locate TestData/{fileName} from {AppDomain.CurrentDomain.BaseDirectory}.");
         }
     }
 }
