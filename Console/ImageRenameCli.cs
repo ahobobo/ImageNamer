@@ -17,6 +17,13 @@ public static class ImageRenameCli
             return;
         }
 
+        if (IsHelpRequested(args[0]))
+        {
+            PrintUsage();
+            Environment.ExitCode = 0;
+            return;
+        }
+
         IForTalkingWithModel model = OllamaAgentFactory.Create();
         IForRenamingImage renamer = new ImageRenamer(new FileOpperator(), model);
         var runner = new ImageRenameRunner(renamer);
@@ -36,6 +43,13 @@ public static class ImageRenameCli
         }
     }
 
+    private static bool IsHelpRequested(string arg)
+    {
+        return string.Equals(arg, "--help", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(arg, "-h", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(arg, "/?", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static void PrintUsage()
     {
         Console.WriteLine(GetUsageText());
@@ -47,6 +61,9 @@ public static class ImageRenameCli
             Usage:
               <executable> <file_path>
               <executable> <directory_path>
+              <executable> --help
+              <executable> -h
+              <executable> /?
 
             Renames a single image file or every supported image found recursively in a directory.
             """;
