@@ -7,6 +7,6 @@ namespace Application.Ports.Driving
 {
     public interface IForRenamingImage
     {
-        Task RenameImageAsync(string imagePath);
+        Task<string> RenameImageAsync(string imagePath);
     }
 }

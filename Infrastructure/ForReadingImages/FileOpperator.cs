@@ -36,7 +36,7 @@ namespace Infrastructure.ForReadingImages
             return new ImageFile(fileName, extension, path, base64Content);
         }
 
-        public void RenameFile(ImageFile originalFile, ImageFile renamedFile)
+        public string RenameFile(ImageFile originalFile, ImageFile renamedFile)
         {
             if (!File.Exists(originalFile.Path))
             {
@@ -54,7 +54,7 @@ namespace Infrastructure.ForReadingImages
             // If the paths are exactly the same, nothing to do.
             if (string.Equals(originalFile.Path, newPath, StringComparison.Ordinal))
             {
-                return;
+                return originalFile.Path;
             }
 
             // Handle case-only renames on Windows (e.g., image.webp -> Image.webp)
@@ -78,10 +78,11 @@ namespace Infrastructure.ForReadingImages
 
                 File.Move(originalFile.Path, tempPath);
                 File.Move(tempPath, newPath);
-                return;
+                return newPath;
             }
 
             File.Move(originalFile.Path, newPath);
+            return newPath;
         }
     }
 }

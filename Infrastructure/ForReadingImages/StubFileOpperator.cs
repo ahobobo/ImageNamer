@@ -19,9 +19,10 @@ namespace Infrastructure.ForReadingImages
             return new ImageFile(fileName, extension, testDataPath, base64Content);
         }
 
-        public void RenameFile(ImageFile originalFile, ImageFile renamedFile)
+        public string RenameFile(ImageFile originalFile, ImageFile renamedFile)
         {
             // Stub implementation: do nothing
+            return originalFile.Path;
         }
 
         private static string ResolveTestDataPath(string fileName)

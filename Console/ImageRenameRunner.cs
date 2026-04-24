@@ -24,8 +24,8 @@ public sealed class ImageRenameRunner
 
         if (File.Exists(inputPath))
         {
-            await _renamer.RenameImageAsync(inputPath);
-            output.WriteLine($"Image renamed successfully: {inputPath}");
+            string newPath = await _renamer.RenameImageAsync(inputPath);
+            output.WriteLine($"Renamed {Path.GetFileName(inputPath)} to {Path.GetFileName(newPath)}");
             return new ImageRenameRunResult(1, 0);
         }
 
@@ -68,9 +68,9 @@ public sealed class ImageRenameRunner
         {
             try
             {
-                await _renamer.RenameImageAsync(imagePath);
+                string newPath = await _renamer.RenameImageAsync(imagePath);
                 successfulCount++;
-                output.WriteLine($"Image renamed successfully: {imagePath}");
+                output.WriteLine($"Renamed {Path.GetFileName(imagePath)} to {Path.GetFileName(newPath)}");
             }
             catch (Exception ex)
             {

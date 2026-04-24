@@ -8,6 +8,6 @@ namespace Application.Ports.Driven
     public interface IForInteractingWithFile
     {
         ImageFile ReadFile(string path);
-        void RenameFile(ImageFile originalFile, ImageFile renamedFile);
+        string RenameFile(ImageFile originalFile, ImageFile renamedFile);
     }
 }

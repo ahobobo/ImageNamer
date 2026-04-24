@@ -122,7 +122,7 @@ public class ImageRenameRunnerTests
 
         public List<string> ReceivedPaths { get; } = [];
 
-        public Task RenameImageAsync(string imagePath)
+        public Task<string> RenameImageAsync(string imagePath)
         {
             ReceivedPaths.Add(imagePath);
 
@@ -132,7 +132,7 @@ public class ImageRenameRunnerTests
                 throw new InvalidOperationException("Rename failed.");
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(imagePath);
         }
     }
 }

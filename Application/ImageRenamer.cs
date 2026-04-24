@@ -17,13 +17,13 @@ namespace Application
             _imgScr = forReadingImages;
             _model = forTalkingWithModel;
         }
-        public async Task RenameImageAsync(string imagePath)
+        public async Task<string> RenameImageAsync(string imagePath)
         {
             var imageFile = _imgScr.ReadFile(imagePath);
 
             var renamedImageFile = await _model.GetNewImageNameAsync(imageFile);
 
-            _imgScr.RenameFile(imageFile, renamedImageFile);
+            return _imgScr.RenameFile(imageFile, renamedImageFile);
         }
     }
 }

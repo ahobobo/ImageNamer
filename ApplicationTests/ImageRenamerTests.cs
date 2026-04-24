@@ -45,10 +45,11 @@ public class ImageRenamerTests
             return _file;
         }
 
-        public void RenameFile(ImageFile originalFile, ImageFile renamedFile)
+        public string RenameFile(ImageFile originalFile, ImageFile renamedFile)
         {
             OriginalFile = originalFile;
             RenamedFile = renamedFile;
+            return originalFile.Path; // Stub return
         }
 
         public ImageFile? OriginalFile { get; private set; }
