@@ -44,20 +44,37 @@ namespace Infrastructure.ForReadingImages
             }
 
             string? directory = Path.GetDirectoryName(originalFile.Path);
-            string normalizedName = renamedFile.Name.ToLowerInvariant();
-            string newPath = Path.Combine(directory ?? string.Empty, normalizedName);
+            string dirPath = directory ?? string.Empty;
+            string extension = renamedFile.Extension.ToLowerInvariant();
+            string nameWithoutExtension = Path.GetFileNameWithoutExtension(renamedFile.Name);
+            
+            string baseNewPath = Path.Combine(dirPath, $"{nameWithoutExtension}{extension}").ToLowerInvariant();
+            string newPath = baseNewPath;
 
+            // If the paths are exactly the same, nothing to do.
             if (string.Equals(originalFile.Path, newPath, StringComparison.Ordinal))
             {
                 return;
             }
 
-            if (OperatingSystem.IsWindows() &&
-                string.Equals(originalFile.Path, newPath, StringComparison.OrdinalIgnoreCase))
+            // Handle case-only renames on Windows (e.g., image.webp -> Image.webp)
+            bool isSameFileDifferentCase = OperatingSystem.IsWindows() &&
+                                           string.Equals(originalFile.Path, newPath, StringComparison.OrdinalIgnoreCase);
+
+            if (!isSameFileDifferentCase)
+            {
+                int counter = 1;
+                while (File.Exists(newPath))
+                {
+                    newPath = Path.Combine(dirPath, $"{nameWithoutExtension} {counter++}{extension}").ToLowerInvariant();
+                }
+            }
+
+            if (isSameFileDifferentCase)
             {
                 string tempPath = Path.Combine(
-                    directory ?? string.Empty,
-                    $".{Guid.NewGuid():N}{Path.GetExtension(newPath)}");
+                    dirPath,
+                    $".{Guid.NewGuid():N}{extension}");
 
                 File.Move(originalFile.Path, tempPath);
                 File.Move(tempPath, newPath);
