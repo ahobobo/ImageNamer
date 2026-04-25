@@ -36,7 +36,8 @@ namespace Infrastructure.Transport
 
             foreach (var imageBase64 in images)
             {
-                messages.Last().Contents.Add(new DataContent(imageBase64, "image/png"));
+                byte[] bytes = Convert.FromBase64String(imageBase64);
+                messages.Last().Contents.Add(new DataContent(bytes, "image/png"));
             }
 
             await foreach (var update in _chatClient.GetStreamingResponseAsync(messages))
