@@ -17,10 +17,10 @@ You give it either a single image file or a directory. If you pass a directory, 
 - Processes directories recursively.
 - Skips non-image files.
 - Renames files in the same folder as the original image.
-- Lowers the final filename before saving it.
+- Applies the configured naming convention before saving it.
 - Continues processing even if one file fails.
 
-The model is instructed to produce a short descriptive filename, usually under 20 characters, using only letters, numbers, and spaces.
+By default, the app uses model `gemma4:e2b`, naming convention `normal`, and maximum filename stem length `20`.
 
 ## Requirements
 
@@ -28,14 +28,14 @@ Before running the app, install and configure:
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [Ollama](https://ollama.com/)
-- The Ollama model used by the app: `gemma4:e4b`
+- The default Ollama model used by the app: `gemma4:e2b`
 
 The app connects to Ollama at `http://localhost:11434`, so Ollama must be running locally when you launch the CLI.
 
 If you have not already pulled the model, run:
 
 ```powershell
-ollama pull gemma4:e4b
+ollama pull gemma4:e2b
 ```
 
 ## How To Run
@@ -51,6 +51,10 @@ dotnet run --project .\Console\Console.csproj -- "C:\path\to\image-or-folder"
 ```powershell
 dotnet run --project .\Console\Console.csproj -- <file_path>
 dotnet run --project .\Console\Console.csproj -- <directory_path>
+dotnet run --project .\Console\Console.csproj -- <path> --model <model_name>
+dotnet run --project .\Console\Console.csproj -- <path> --naming <normal|snake|capitalized|pascal|kebab>
+dotnet run --project .\Console\Console.csproj -- <path> --max-length <number>
+dotnet run --project .\Console\Console.csproj -- <path> --config <config_path>
 dotnet run --project .\Console\Console.csproj -- --help
 dotnet run --project .\Console\Console.csproj -- -h
 dotnet run --project .\Console\Console.csproj -- /?
@@ -70,12 +74,40 @@ dotnet run --project .\Console\Console.csproj -- "C:\Photos\Vacation"
 dotnet run --project .\Console\Console.csproj -- "C:\Photos\Vacation\IMG_0012.webp"
 ```
 
+```powershell
+dotnet run --project .\Console\Console.csproj -- .\TestData --model llava:latest --naming kebab --max-length 40
+```
+
+### Project-Local Configuration
+
+If `imagenamer.json` exists in the directory where you run the app, ImageNamer uses it for saved project-local defaults:
+
+```json
+{
+  "model": "gemma4:e2b",
+  "naming": "snake",
+  "maxLength": 40
+}
+```
+
+All properties are optional. Per-run options override valid project-local config for that run only. Malformed or invalid project-local config blocks the run before any files are renamed.
+
+Supported naming values:
+
+- `normal` - preserves model casing, spaces, and filesystem-valid punctuation while removing invalid filename characters.
+- `snake` - `red_sunset_beach_photo`
+- `capitalized` - `Red Sunset Beach Photo`
+- `pascal` - `RedSunsetBeachPhoto`
+- `kebab` - `red-sunset-beach-photo`
+
+When the generated filename stem is longer than `maxLength`, ImageNamer removes trailing words until it fits. If a single remaining word is still too long, it truncates that word.
+
 ## Notes
 
 - If the path does not exist, the app exits with an error.
 - If a directory contains no supported images, it reports that nothing was found.
 - If any rename fails, the app keeps going and exits with a non-zero exit code.
-- The command line does not take flags or options, only the input path.
+- Invalid command line options or invalid config values fail before files are renamed.
 
 ## Project Layout
 

@@ -1,112 +1,73 @@
 using Application.Models;
 using Application.Ports.Driven;
-using System;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Infrastructure.ForTalkingWithModels
+namespace Infrastructure.ForTalkingWithModels;
+
+public class OllamaAgent : IForTalkingWithModel
 {
-    public class OllamaAgent : IForTalkingWithModel
+    public const string Instructions = """
+        You are an image renamer assistant.
+        Given an image filename and its content, propose a better, descriptive filename.
+        The filename should be descriptive and contain multiple keywords to make it easily searchable.
+        The filename should be at least 3 words long, but ideally 5 or more words.
+        Be creative and descriptive, but do not add any extra information that is not in the image.
+        If you recognize the character(s) in the image, include their name(s) in the filename at the beginning of the name.
+        Return only the new filename and nothing else.
+        """;
+
+    private readonly IOllamaChatTransport _chatTransport;
+
+    public OllamaAgent(IOllamaChatTransport chatTransport, IForValidatingFileNames fileNameValidator)
     {
-        public const string Instructions = """
-            You are an image renamer assistant.
-            Given an image filename and its content, propose a better, descriptive filename.
-            The filename should be descriptive and contain multiple keywords to make it easily searchable.
-            The filename should be at least 3 words long, but ideally 5 or more words.
-            Be creative and descriptive, but do not add any extra information that is not in the image.
-            If you recognize the character(s) in the image, include their name(s) in the filename at the beginning of the name.
-            Do **not** use punctuation in the filename at all. Only letters, numbers and spaces.
-            Return **only** the new filename and nothing else.
-            """;
+        _chatTransport = chatTransport;
+    }
 
-        private const string RemovePunctuationRetryPrompt = """
-            The previous filename contained punctuation.
-            Remove all punctuation and return only letters, numbers, and spaces.
-            Return only the filename and nothing else.
-            """;
+    public async Task<ImageFile> GetNewImageNameAsync(ImageFile originalImageFile)
+    {
+        string response = await GetRawGeneratedNameAsync(
+            originalImageFile,
+            BuildInitialPrompt(originalImageFile));
 
-        private readonly IOllamaChatTransport _chatTransport;
-        private readonly IForValidatingFileNames _fileNameValidator;
+        string normalizedName = NormalizeGeneratedName(response, originalImageFile.Extension);
 
-        public OllamaAgent(IOllamaChatTransport chatTransport, IForValidatingFileNames fileNameValidator)
+        if (string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(normalizedName)))
         {
-            _chatTransport = chatTransport;
-            _fileNameValidator = fileNameValidator;
+            throw new InvalidDataException("The model returned an empty filename.");
         }
 
-        public async Task<ImageFile> GetNewImageNameAsync(ImageFile originalImageFile)
+        return originalImageFile with { Name = normalizedName };
+    }
+
+    private static string BuildInitialPrompt(ImageFile originalImageFile)
+    {
+        return $"Original filename: {originalImageFile.Name}";
+    }
+
+    private async Task<string> GetRawGeneratedNameAsync(ImageFile originalImageFile, string prompt)
+    {
+        var response = _chatTransport.SendAsync(Instructions, prompt, [originalImageFile.Base64Content]);
+        var generatedName = new StringBuilder();
+
+        await foreach (var token in response)
         {
-            string firstResponse = await GetRawGeneratedNameAsync(
-                originalImageFile,
-                BuildInitialPrompt(originalImageFile));
-
-            if (!IsValidGeneratedName(firstResponse, originalImageFile.Extension))
-            {
-                string retryResponse = await GetRawGeneratedNameAsync(
-                    originalImageFile,
-                    BuildRetryPrompt(firstResponse));
-
-                if (!IsValidGeneratedName(retryResponse, originalImageFile.Extension))
-                {
-                    throw new InvalidDataException("The model returned a filename with punctuation after retry.");
-                }
-
-                firstResponse = retryResponse;
-            }
-
-            string normalizedName = NormalizeGeneratedName(firstResponse, originalImageFile.Extension);
-
-            return originalImageFile with { Name = normalizedName };
+            generatedName.Append(token);
         }
 
-        private static string BuildInitialPrompt(ImageFile originalImageFile)
-        {
-            return $"Original filename: {originalImageFile.Name}";
-        }
+        return generatedName.ToString().Trim();
+    }
 
-        private static string BuildRetryPrompt(string previousResponse)
-        {
-            return $"""
-                {RemovePunctuationRetryPrompt}
-                Previous filename: {previousResponse}
-                """;
-        }
+    private static string NormalizeGeneratedName(string generatedName, string extension)
+    {
+        string normalizedExtension = extension.StartsWith('.') ? extension : $".{extension}";
+        string nameWithoutExtension = RemoveExpectedExtension(generatedName, normalizedExtension);
+        return Path.ChangeExtension(nameWithoutExtension, normalizedExtension);
+    }
 
-        private async Task<string> GetRawGeneratedNameAsync(ImageFile originalImageFile, string prompt)
-        {
-            var response = _chatTransport.SendAsync(Instructions, prompt, [originalImageFile.Base64Content]);
-            var generatedName = new StringBuilder();
-
-            await foreach (var token in response)
-            {
-                generatedName.Append(token);
-            }
-
-            return generatedName.ToString().Trim();
-        }
-
-        private bool IsValidGeneratedName(string generatedName, string extension)
-        {
-            string nameWithoutExtension = RemoveExpectedExtension(generatedName, extension);
-            return _fileNameValidator.IsValidFileName(nameWithoutExtension);
-        }
-
-        private static string NormalizeGeneratedName(string generatedName, string extension)
-        {
-            string nameWithoutExtension = RemoveExpectedExtension(generatedName, extension);
-            return Path.ChangeExtension(nameWithoutExtension, extension);
-        }
-
-        private static string RemoveExpectedExtension(string generatedName, string extension)
-        {
-            if (generatedName.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
-            {
-                return generatedName[..^extension.Length].TrimEnd();
-            }
-
-            return generatedName;
-        }
-
+    private static string RemoveExpectedExtension(string generatedName, string extension)
+    {
+        return generatedName.EndsWith(extension, StringComparison.OrdinalIgnoreCase)
+            ? generatedName[..^extension.Length].TrimEnd()
+            : generatedName;
     }
 }

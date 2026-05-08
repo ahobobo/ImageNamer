@@ -11,10 +11,10 @@
 
 **Purpose**: Establish shared files and naming used by later vertical slices.
 
-- [ ] T001 Add shared temporary project-local config test helper for `imagenamer.json` scenarios in ApplicationTests/ImageNamingConfigTestHelpers.cs
-- [ ] T002 [P] Add empty test file for naming preferences in ApplicationTests/ImageNamingPreferencesTests.cs
-- [ ] T003 [P] Add empty test file for CLI option parsing in ApplicationTests/ImageRenameOptionsTests.cs
-- [ ] T004 [P] Add empty test file for deterministic formatting in ApplicationTests/ImageNameFormatterTests.cs
+- [x] T001 Add shared temporary project-local config test helper for `imagenamer.json` scenarios in ApplicationTests/ImageNamingConfigTestHelpers.cs
+- [x] T002 [P] Add empty test file for naming preferences in ApplicationTests/ImageNamingPreferencesTests.cs
+- [x] T003 [P] Add empty test file for CLI option parsing in ApplicationTests/ImageRenameOptionsTests.cs
+- [x] T004 [P] Add empty test file for deterministic formatting in ApplicationTests/ImageNameFormatterTests.cs
 
 ---
 
@@ -24,12 +24,12 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 Define NamingConvention enum and ImageNamingPreferences record with built-in defaults in Application/Models/ImageNamingPreferences.cs
-- [ ] T006 [P] Define ProjectLocalConfig, RunOverrides, and PreferenceSource models in Application/Models/ImageNamingPreferenceSources.cs
-- [ ] T007 [P] Define IForResolvingImageNamingPreferences interface in Application/Ports/Driven/IForResolvingImageNamingPreferences.cs
-- [ ] T008 [P] Define IForFormattingImageName interface in Application/Ports/Driven/IForFormattingImageName.cs
-- [ ] T009 [P] Define ImageRenameOptions and CLI parsing result types in Console/ImageRenameOptions.cs
-- [ ] T010 Verify SDK-style test project includes new ApplicationTests/*.cs files without ApplicationTests/ApplicationTests.csproj edits
+- [x] T005 Define NamingConvention enum and ImageNamingPreferences record with built-in defaults in Application/Models/ImageNamingPreferences.cs
+- [x] T006 [P] Define ProjectLocalConfig, RunOverrides, and PreferenceSource models in Application/Models/ImageNamingPreferenceSources.cs
+- [x] T007 [P] Define IForResolvingImageNamingPreferences interface in Application/Ports/Driven/IForResolvingImageNamingPreferences.cs
+- [x] T008 [P] Define IForFormattingImageName interface in Application/Ports/Driven/IForFormattingImageName.cs
+- [x] T009 [P] Define ImageRenameOptions and CLI parsing result types in Console/ImageRenameOptions.cs
+- [x] T010 Verify SDK-style test project includes new ApplicationTests/*.cs files without ApplicationTests/ApplicationTests.csproj edits
 
 **Checkpoint**: Foundation ready; user story implementation can now begin.
 
@@ -43,18 +43,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T011 [P] [US1] Add preference-resolution tests for built-in defaults, valid project-local config, malformed config, and invalid config in ApplicationTests/ImageNamingPreferencesTests.cs
-- [ ] T012 [P] [US1] Add CLI contract tests for missing config using defaults and invalid project-local config blocking before rename in ApplicationTests/ImageRenameCliTests.cs
-- [ ] T013 [P] [US1] Add Ollama factory test proving configured model name is passed into client construction seam in ApplicationTests/OllamaAgentFactoryTests.cs
+- [x] T011 [P] [US1] Add preference-resolution tests for built-in defaults, valid project-local config, malformed config, and invalid config in ApplicationTests/ImageNamingPreferencesTests.cs
+- [x] T012 [P] [US1] Add CLI contract tests for missing config using defaults and invalid project-local config blocking before rename in ApplicationTests/ImageRenameCliTests.cs
+- [x] T013 [P] [US1] Add Ollama factory test proving configured model name is passed into client construction seam in ApplicationTests/OllamaAgentFactoryTests.cs
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Implement project-local JSON config loading and validation in Console/ImageRenameConfigurationLoader.cs
-- [ ] T015 [US1] Implement deterministic preference resolution with precedence defaults then project-local config in Application/ImageNamingPreferenceResolver.cs
-- [ ] T016 [US1] Update ImageRenameCli to load project-local config before constructing the runner in Console/ImageRenameCli.cs
-- [ ] T017 [US1] Update OllamaAgentFactory to accept resolved model name and default to gemma4:e2b in Console/Factories/OllamaAgentFactory.cs
-- [ ] T018 [US1] Add user-facing config error handling before rename execution in Console/ImageRenameCli.cs
-- [ ] T019 [US1] Document project-local config defaults and examples in README.md
+- [x] T014 [US1] Implement project-local JSON config loading and validation in Console/ImageRenameConfigurationLoader.cs
+- [x] T015 [US1] Implement deterministic preference resolution with precedence defaults then project-local config in Application/ImageNamingPreferenceResolver.cs
+- [x] T016 [US1] Update ImageRenameCli to load project-local config before constructing the runner in Console/ImageRenameCli.cs
+- [x] T017 [US1] Update OllamaAgentFactory to accept resolved model name and default to gemma4:e2b in Console/Factories/OllamaAgentFactory.cs
+- [x] T018 [US1] Add user-facing config error handling before rename execution in Console/ImageRenameCli.cs
+- [x] T019 [US1] Document project-local config defaults and examples in README.md
 
 **Checkpoint**: User Story 1 is independently testable as the MVP.
 
@@ -68,17 +68,17 @@
 
 ### Tests for User Story 2
 
-- [ ] T020 [P] [US2] Add CLI option parsing tests for --model, --naming, --max-length, --config, unknown options, and invalid values in ApplicationTests/ImageRenameOptionsTests.cs
-- [ ] T021 [P] [US2] Add preference-resolution tests proving run overrides win over valid project-local config and do not rescue invalid project-local config in ApplicationTests/ImageNamingPreferencesTests.cs
-- [ ] T022 [P] [US2] Add CLI integration-style tests proving invalid override exits before runner construction in ApplicationTests/ImageRenameCliTests.cs
+- [x] T020 [P] [US2] Add CLI option parsing tests for --model, --naming, --max-length, --config, unknown options, and invalid values in ApplicationTests/ImageRenameOptionsTests.cs
+- [x] T021 [P] [US2] Add preference-resolution tests proving run overrides win over valid project-local config and do not rescue invalid project-local config in ApplicationTests/ImageNamingPreferencesTests.cs
+- [x] T022 [P] [US2] Add CLI integration-style tests proving invalid override exits before runner construction in ApplicationTests/ImageRenameCliTests.cs
 
 ### Implementation for User Story 2
 
-- [ ] T023 [US2] Implement manual CLI option parsing for input path and overrides in Console/ImageRenameOptionsParser.cs
-- [ ] T024 [US2] Update ImageRenameCli to use parsed input path, override values, and optional --config path in Console/ImageRenameCli.cs
-- [ ] T025 [US2] Extend ImageNamingPreferenceResolver to apply valid run overrides after config in Application/ImageNamingPreferenceResolver.cs
-- [ ] T026 [US2] Update CLI usage text with --model, --naming, --max-length, --config, supported naming values, and defaults in Console/ImageRenameCli.cs
-- [ ] T027 [US2] Update README examples for per-run overrides in README.md
+- [x] T023 [US2] Implement manual CLI option parsing for input path and overrides in Console/ImageRenameOptionsParser.cs
+- [x] T024 [US2] Update ImageRenameCli to use parsed input path, override values, and optional --config path in Console/ImageRenameCli.cs
+- [x] T025 [US2] Extend ImageNamingPreferenceResolver to apply valid run overrides after config in Application/ImageNamingPreferenceResolver.cs
+- [x] T026 [US2] Update CLI usage text with --model, --naming, --max-length, --config, supported naming values, and defaults in Console/ImageRenameCli.cs
+- [x] T027 [US2] Update README examples for per-run overrides in README.md
 
 **Checkpoint**: User Stories 1 and 2 both work independently.
 
@@ -92,17 +92,17 @@
 
 ### Tests for User Story 3
 
-- [ ] T028 [P] [US3] Add formatter tests for normal preserving valid punctuation and casing while removing invalid filename characters and duplicate extension text in ApplicationTests/ImageNameFormatterTests.cs
-- [ ] T029 [US3] Add formatter tests for snake, capitalized, pascal, and kebab examples from the spec in ApplicationTests/ImageNameFormatterTests.cs
-- [ ] T030 [P] [US3] Add ImageRenamer test proving model output is formatted before file rename in ApplicationTests/ImageRenamerTests.cs
+- [x] T028 [P] [US3] Add formatter tests for normal preserving valid punctuation and casing while removing invalid filename characters and duplicate extension text in ApplicationTests/ImageNameFormatterTests.cs
+- [x] T029 [US3] Add formatter tests for snake, capitalized, pascal, and kebab examples from the spec in ApplicationTests/ImageNameFormatterTests.cs
+- [x] T030 [P] [US3] Add ImageRenamer test proving model output is formatted before file rename in ApplicationTests/ImageRenamerTests.cs
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] Implement ImageNameFormatter with normal, snake, capitalized, pascal, and kebab conventions in Application/ImageNameFormatter.cs
-- [ ] T032 [US3] Update ImageRenamer constructor to accept IForFormattingImageName and ImageNamingPreferences in Application/ImageRenamer.cs
-- [ ] T033 [US3] Update ImageRenamer to format model-provided names before calling the file rename port in Application/ImageRenamer.cs
-- [ ] T034 [US3] Update FileNameValidator to validate final filename characters for all supported conventions in Infrastructure/Validation/FileNameValidator.cs
-- [ ] T035 [US3] Compose ImageNameFormatter and resolved preferences in ImageRenameCli in Console/ImageRenameCli.cs
+- [x] T031 [US3] Implement ImageNameFormatter with normal, snake, capitalized, pascal, and kebab conventions in Application/ImageNameFormatter.cs
+- [x] T032 [US3] Update ImageRenamer constructor to accept IForFormattingImageName and ImageNamingPreferences in Application/ImageRenamer.cs
+- [x] T033 [US3] Update ImageRenamer to format model-provided names before calling the file rename port in Application/ImageRenamer.cs
+- [x] T034 [US3] Update FileNameValidator to validate final filename characters for all supported conventions in Infrastructure/Validation/FileNameValidator.cs
+- [x] T035 [US3] Compose ImageNameFormatter and resolved preferences in ImageRenameCli in Console/ImageRenameCli.cs
 
 **Checkpoint**: User Stories 1, 2, and 3 are independently functional.
 
@@ -116,15 +116,15 @@
 
 ### Tests for User Story 4
 
-- [ ] T036 [P] [US4] Add formatter tests for word-boundary shortening, single-word hard truncation, extension preservation, and too-short max length in ApplicationTests/ImageNameFormatterTests.cs
-- [ ] T037 [P] [US4] Add preference validation tests for minimum acceptable max length in ApplicationTests/ImageNamingPreferencesTests.cs
+- [x] T036 [P] [US4] Add formatter tests for word-boundary shortening, single-word hard truncation, extension preservation, and too-short max length in ApplicationTests/ImageNameFormatterTests.cs
+- [x] T037 [P] [US4] Add preference validation tests for minimum acceptable max length in ApplicationTests/ImageNamingPreferencesTests.cs
 
 ### Implementation for User Story 4
 
-- [ ] T038 [US4] Add max-length enforcement to ImageNameFormatter using trailing-word removal before hard truncation in Application/ImageNameFormatter.cs
-- [ ] T039 [US4] Add minimum max-length validation to ImageNamingPreferenceResolver in Application/ImageNamingPreferenceResolver.cs
-- [ ] T040 [US4] Update CLI error messages for too-short max length in Console/ImageRenameCli.cs
-- [ ] T041 [US4] Update README max-length behavior documentation in README.md
+- [x] T038 [US4] Add max-length enforcement to ImageNameFormatter using trailing-word removal before hard truncation in Application/ImageNameFormatter.cs
+- [x] T039 [US4] Add minimum max-length validation to ImageNamingPreferenceResolver in Application/ImageNamingPreferenceResolver.cs
+- [x] T040 [US4] Update CLI error messages for too-short max length in Console/ImageRenameCli.cs
+- [x] T041 [US4] Update README max-length behavior documentation in README.md
 
 **Checkpoint**: User Story 4 works independently with deterministic tests.
 
@@ -138,18 +138,18 @@
 
 ### Tests for User Story 5
 
-- [ ] T042 [P] [US5] Update FileOpperator tests to assert exact requested final name is used without forced lowercasing in ApplicationTests/FileOpperatorTests.cs
-- [ ] T043 [P] [US5] Add regression tests for directory recursion, unsupported-file skipping, failure continuation, and collision handling after formatter integration in ApplicationTests/ImageRenameRunnerTests.cs
-- [ ] T044 [P] [US5] Update Ollama transport tests to allow arbitrary system instructions from the caller in ApplicationTests/OllamaChatTransportTests.cs
+- [x] T042 [P] [US5] Update FileOperator tests to assert exact requested final name is used without forced lowercasing in ApplicationTests/FileOperatorTests.cs
+- [x] T043 [P] [US5] Add regression tests for directory recursion, unsupported-file skipping, failure continuation, and collision handling after formatter integration in ApplicationTests/ImageRenameRunnerTests.cs
+- [x] T044 [P] [US5] Update Ollama transport tests to allow arbitrary system instructions from the caller in ApplicationTests/OllamaChatTransportTests.cs
 
 ### Implementation for User Story 5
 
-- [ ] T045 [US5] Remove forced lowercasing and keep collision handling in Infrastructure/ForReadingImages/FileOpperator.cs
-- [ ] T046 [US5] Rename FileOpperator to FileOperator across Infrastructure/ForReadingImages/FileOperator.cs, Infrastructure/ForReadingImages/StubFileOpperator.cs, ApplicationTests/FileOpperatorTests.cs, and Console/ImageRenameCli.cs
-- [ ] T047 [US5] Remove unused AppFromDrivenSide and IImageNamerApp files from Application/AppFromDrivenSide.cs and Application/Ports/IImageNamerApp.cs
-- [ ] T048 [US5] Remove OllamaAgent.Instructions equality guard from Infrastructure/Transport/OllamaChatTransport.cs
-- [ ] T049 [US5] Update OllamaAgent tests for post-formatting responsibilities and retained punctuation retry behavior in ApplicationTests/OllamaAgentTests.cs
-- [ ] T050 [US5] Run full test suite with dotnet test ApplicationTests/ApplicationTests.csproj -v minimal
+- [x] T045 [US5] Remove forced lowercasing and keep collision handling in Infrastructure/ForReadingImages/FileOperator.cs
+- [x] T046 [US5] Rename legacy FileOpperator types to FileOperator across Infrastructure/ForReadingImages/FileOperator.cs, Infrastructure/ForReadingImages/StubFileOperator.cs, ApplicationTests/FileOperatorTests.cs, and Console/ImageRenameCli.cs
+- [x] T047 [US5] Remove unused AppFromDrivenSide and IImageNamerApp files from Application/AppFromDrivenSide.cs and Application/Ports/IImageNamerApp.cs
+- [x] T048 [US5] Remove OllamaAgent.Instructions equality guard from Infrastructure/Transport/OllamaChatTransport.cs
+- [x] T049 [US5] Update OllamaAgent tests for post-formatting responsibilities and removed punctuation retry behavior in ApplicationTests/OllamaAgentTests.cs
+- [x] T050 [US5] Run full test suite with dotnet test ApplicationTests/ApplicationTests.csproj -v minimal
 
 **Checkpoint**: Cleanup preserves existing workflows and all tests pass.
 
@@ -159,10 +159,10 @@
 
 **Purpose**: Documentation, validation, and consistency across all stories.
 
-- [ ] T051 [P] Update quickstart validation notes after implementation in specs/001-configurable-naming/quickstart.md
-- [ ] T052 [P] Verify CLI contract examples use `imagenamer.json` as the default project-local config path in specs/001-configurable-naming/contracts/cli-contract.md
-- [ ] T053 Review README and help text for consistent naming labels in README.md and Console/ImageRenameCli.cs
-- [ ] T054 Run full validation using dotnet test ApplicationTests/ApplicationTests.csproj -v minimal
+- [x] T051 [P] Update quickstart validation notes after implementation in specs/001-configurable-naming/quickstart.md
+- [x] T052 [P] Verify CLI contract examples use `imagenamer.json` as the default project-local config path in specs/001-configurable-naming/contracts/cli-contract.md
+- [x] T053 Review README and help text for consistent naming labels in README.md and Console/ImageRenameCli.cs
+- [x] T054 Run full validation using dotnet test ApplicationTests/ApplicationTests.csproj -v minimal
 
 ---
 

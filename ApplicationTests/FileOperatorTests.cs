@@ -3,20 +3,20 @@ using Infrastructure.ForReadingImages;
 
 namespace ApplicationTests;
 
-public class FileOpperatorTests
+public class FileOperatorTests
 {
     [Test]
-    public void RenameFile_LowercasesTheFinalFilename()
+    public void RenameFile_UsesRequestedFinalFilenameWithoutForcingLowercase()
     {
         string root = CreateTempDirectory();
-        string sourcePath = Path.Combine(root, "MiXeDName.WEBP");
-        string expectedPath = Path.Combine(root, "newname.webp");
+        string sourcePath = Path.Combine(root, "original.webp");
+        string expectedPath = Path.Combine(root, "NewName.webp");
 
         File.WriteAllBytes(sourcePath, [1, 2, 3, 4]);
 
-        var original = new ImageFile("MiXeDName.WEBP", ".WEBP", sourcePath, string.Empty);
-        var renamed = new ImageFile("NeWNaMe.WEBP", ".WEBP", sourcePath, string.Empty);
-        var sut = new FileOpperator();
+        var original = new ImageFile("original.webp", ".webp", sourcePath, string.Empty);
+        var renamed = new ImageFile("NewName.webp", ".webp", sourcePath, string.Empty);
+        var sut = new FileOperator();
 
         try
         {
@@ -32,7 +32,7 @@ public class FileOpperatorTests
     }
 
     [Test]
-    public void RenameFile_LeavesAlreadyLowercaseNameInPlace()
+    public void RenameFile_LeavesSamePathInPlace()
     {
         string root = CreateTempDirectory();
         string sourcePath = Path.Combine(root, "alreadylower.webp");
@@ -41,7 +41,7 @@ public class FileOpperatorTests
 
         var original = new ImageFile("alreadylower.webp", ".webp", sourcePath, string.Empty);
         var renamed = new ImageFile("alreadylower.webp", ".webp", sourcePath, string.Empty);
-        var sut = new FileOpperator();
+        var sut = new FileOperator();
 
         try
         {
@@ -70,7 +70,7 @@ public class FileOpperatorTests
 
         var original = new ImageFile("image.webp", ".webp", sourcePath, string.Empty);
         var renamed = new ImageFile("newname.webp", ".webp", sourcePath, string.Empty);
-        var sut = new FileOpperator();
+        var sut = new FileOperator();
 
         try
         {

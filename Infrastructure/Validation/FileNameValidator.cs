@@ -1,23 +1,17 @@
 using Application.Ports.Driven;
-using System.Linq;
 
-namespace Infrastructure.Validation
+namespace Infrastructure.Validation;
+
+public sealed class FileNameValidator : IForValidatingFileNames
 {
-    public sealed class FileNameValidator : IForValidatingFileNames
+    public bool IsValidFileName(string fileName)
     {
-        public bool IsValidFileName(string fileName)
+        if (string.IsNullOrWhiteSpace(fileName))
         {
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                return false;
-            }
-
-            return fileName.All(IsAllowedNameCharacter);
+            return false;
         }
 
-        private static bool IsAllowedNameCharacter(char character)
-        {
-            return char.IsLetterOrDigit(character) || character == ' ';
-        }
+        HashSet<char> invalidCharacters = Path.GetInvalidFileNameChars().ToHashSet();
+        return fileName.All(character => !invalidCharacters.Contains(character));
     }
 }

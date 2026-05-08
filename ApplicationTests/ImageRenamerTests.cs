@@ -8,7 +8,7 @@ namespace ApplicationTests;
 public class ImageRenamerTests
 {
     [Test]
-    public async Task RenameImageAsync_UsesModelResultToRenameFile()
+    public async Task RenameImageAsync_FormatsModelResultBeforeRenamingFile()
     {
         var originalFile = new ImageFile(
             "original.webp",
@@ -17,15 +17,16 @@ public class ImageRenamerTests
             Convert.ToBase64String(new byte[] { 1, 2, 3, 4 }));
 
         var fileStore = new RecordingFileStore(originalFile);
-        var model = new RecordingModel(originalFile with { Name = "renamed.webp" });
-        IForRenamingImage sut = new ImageRenamer(fileStore, model);
+        var model = new RecordingModel(originalFile with { Name = "red sunset beach photo.webp" });
+        var preferences = ImageNamingPreferences.Defaults with { NamingConvention = NamingConvention.Kebab, MaxNameLength = 50 };
+        IForRenamingImage sut = new ImageRenamer(fileStore, model, new ImageNameFormatter(), preferences);
 
         await sut.RenameImageAsync(@"C:\images\original.webp");
 
         Assert.That(fileStore.ReadPath, Is.EqualTo(@"C:\images\original.webp"));
         Assert.That(model.ReceivedImage, Is.EqualTo(originalFile));
         Assert.That(fileStore.OriginalFile, Is.EqualTo(originalFile));
-        Assert.That(fileStore.RenamedFile, Is.EqualTo(originalFile with { Name = "renamed.webp" }));
+        Assert.That(fileStore.RenamedFile, Is.EqualTo(originalFile with { Name = "red-sunset-beach-photo.webp" }));
     }
 
     private sealed class RecordingFileStore : IForInteractingWithFile
@@ -39,6 +40,10 @@ public class ImageRenamerTests
 
         public string? ReadPath { get; private set; }
 
+        public ImageFile? OriginalFile { get; private set; }
+
+        public ImageFile? RenamedFile { get; private set; }
+
         public ImageFile ReadFile(string path)
         {
             ReadPath = path;
@@ -49,12 +54,8 @@ public class ImageRenamerTests
         {
             OriginalFile = originalFile;
             RenamedFile = renamedFile;
-            return originalFile.Path; // Stub return
+            return originalFile.Path;
         }
-
-        public ImageFile? OriginalFile { get; private set; }
-
-        public ImageFile? RenamedFile { get; private set; }
     }
 
     private sealed class RecordingModel : IForTalkingWithModel

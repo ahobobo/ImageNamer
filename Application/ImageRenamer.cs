@@ -1,29 +1,45 @@
-﻿using Application.Ports.Driven;
+using Application.Models;
+using Application.Ports.Driven;
 using Application.Ports.Driving;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Application
+namespace Application;
+
+public class ImageRenamer : IForRenamingImage
 {
-    public class ImageRenamer : IForRenamingImage
+    private readonly IForInteractingWithFile _fileOperator;
+    private readonly IForTalkingWithModel _model;
+    private readonly IForFormattingImageName _nameFormatter;
+    private readonly ImageNamingPreferences _preferences;
+
+    public ImageRenamer(IForInteractingWithFile forReadingImages, IForTalkingWithModel forTalkingWithModel)
+        : this(forReadingImages, forTalkingWithModel, new ImageNameFormatter(), ImageNamingPreferences.Defaults)
     {
-        //driven ports
-        private readonly IForTalkingWithModel _model;
-        private readonly IForInteractingWithFile _imgScr;
+    }
 
-        public ImageRenamer(IForInteractingWithFile forReadingImages, IForTalkingWithModel forTalkingWithModel)
-        {
-            _imgScr = forReadingImages;
-            _model = forTalkingWithModel;
-        }
-        public async Task<string> RenameImageAsync(string imagePath)
-        {
-            var imageFile = _imgScr.ReadFile(imagePath);
+    public ImageRenamer(
+        IForInteractingWithFile forReadingImages,
+        IForTalkingWithModel forTalkingWithModel,
+        IForFormattingImageName nameFormatter,
+        ImageNamingPreferences preferences)
+    {
+        _fileOperator = forReadingImages;
+        _model = forTalkingWithModel;
+        _nameFormatter = nameFormatter;
+        _preferences = preferences;
+    }
 
-            var renamedImageFile = await _model.GetNewImageNameAsync(imageFile);
+    public async Task<string> RenameImageAsync(string imagePath)
+    {
+        var imageFile = _fileOperator.ReadFile(imagePath);
+        var renamedImageFile = await _model.GetNewImageNameAsync(imageFile);
 
-            return _imgScr.RenameFile(imageFile, renamedImageFile);
-        }
+        string formattedName = _nameFormatter.FormatName(
+            renamedImageFile.Name,
+            imageFile.Extension,
+            _preferences);
+
+        return _fileOperator.RenameFile(
+            imageFile,
+            renamedImageFile with { Name = formattedName, Extension = imageFile.Extension });
     }
 }
