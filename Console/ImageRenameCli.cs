@@ -28,7 +28,7 @@ public static class ImageRenameCli
 
         if (parsed.ErrorMessage is not null)
         {
-            global::System.Console.Error.WriteLine($"Error: {parsed.ErrorMessage}");
+            Console.Error.WriteLine($"Error: {parsed.ErrorMessage}");
             PrintUsage();
             Environment.ExitCode = 1;
             return;
@@ -49,14 +49,14 @@ public static class ImageRenameCli
         }
         catch (Exception ex)
         {
-            global::System.Console.Error.WriteLine($"Error: {ex.Message}");
+            Console.Error.WriteLine($"Error: {ex.Message}");
             Environment.ExitCode = 1;
         }
     }
 
     private static void PrintUsage()
     {
-        global::System.Console.WriteLine(GetUsageText());
+        Console.WriteLine(GetUsageText());
     }
 
     public static string GetUsageText()
