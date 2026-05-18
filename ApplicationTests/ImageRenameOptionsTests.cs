@@ -1,5 +1,6 @@
 using Application.Models;
 using ImageNamer.Cli;
+using TestsShared;
 
 namespace ApplicationTests;
 

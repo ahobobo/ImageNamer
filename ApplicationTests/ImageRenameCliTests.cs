@@ -2,6 +2,7 @@ using Application.Models;
 using Application.Ports.Driven;
 using Application.Ports.Driving;
 using ImageNamer.Cli;
+using TestsShared;
 
 namespace ApplicationTests;
 

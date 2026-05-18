@@ -1,6 +1,6 @@
-namespace ApplicationTests;
+namespace TestsShared;
 
-internal sealed class TemporaryWorkingDirectory : IDisposable
+public sealed class TemporaryWorkingDirectory : IDisposable
 {
     private readonly string _originalDirectory;
 
