@@ -9,7 +9,7 @@
 ## 2. E2E Project Setup
 
 - [x] 2.1 Create the `E2ETests` project directory.
-- [x] 2.2 Create `E2ETests.csproj` with NUnit, FluentAssertions, and a reference to `TestsShared`.
+- [x] 2.2 Create `E2ETests.csproj` with NUnit and a reference to `TestsShared`.
 - [x] 2.3 Register `E2ETests` in the solution file (`ImageNamer.slnx`).
 
 ## 3. Test Infrastructure
@@ -25,6 +25,6 @@
 
 ## 5. Final Validation
 
-- [ ] 5.1 Run all tests (Unit + E2E) and verify they pass.
-- [ ] 5.2 Verify that `ApplicationTests` still works correctly after the refactoring.
-- [ ] 5.3 Confirm `TestData` remains pristine after test runs.
+- [x] 5.1 Run all tests (Unit + E2E) and verify they pass.
+- [x] 5.2 Verify that `ApplicationTests` still works correctly after the refactoring.
+- [x] 5.3 Confirm `TestData` remains pristine after test runs.

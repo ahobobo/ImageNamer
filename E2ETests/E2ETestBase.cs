@@ -2,15 +2,16 @@ using TestsShared;
 
 namespace E2ETests;
 
-public abstract class E2ETestBase : IDisposable
+public abstract class E2ETestBase
 {
-    protected readonly TemporaryWorkingDirectory TempDir;
-    protected readonly string TestDataPath;
+    protected TemporaryWorkingDirectory TempDir { get; private set; } = null!;
+    protected string TestDataPath { get; private set; } = null!;
 
-    protected E2ETestBase()
+    [SetUp]
+    public void SetUp()
     {
         TempDir = new TemporaryWorkingDirectory();
-        
+
         // Find project root by looking for ImageNamer.slnx
         string current = AppContext.BaseDirectory;
         while (!File.Exists(Path.Combine(current, "ImageNamer.slnx")))
@@ -44,9 +45,9 @@ public abstract class E2ETestBase : IDisposable
         }
     }
 
-    public void Dispose()
+    [TearDown]
+    public void TearDown()
     {
-        // Restore original directory before deleting
-        TempDir.Dispose();
+        TempDir?.Dispose();
     }
 }
