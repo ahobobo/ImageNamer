@@ -71,7 +71,7 @@ public static class ImageRenameCli
 
             Options:
               --model <name>          Override the Ollama model for this run.
-              --naming <value>        Override naming convention: normal, snake, capitalized, pascal, kebab.
+              --naming <value>        Override naming convention: {0}.
               --max-length <number>   Override the maximum filename stem length.
               --config <path>         Use a project-local config file instead of imagenamer.json.
 
@@ -82,7 +82,7 @@ public static class ImageRenameCli
               Max length: 20
 
             Renames a single image file or every supported image found recursively in a directory.
-            """;
+            """.Replace("{0}", ImageRenameOptionsParser.SupportedNamingConventionUsageText);
     }
 }
 
@@ -96,14 +96,26 @@ public sealed class ImageRenameCliDependencies
         new ImageNamingPreferenceResolver();
 
     public Func<ImageNamingPreferences, IForTalkingWithModel> ModelFactory { get; init; } =
-        OllamaAgentFactory.Create;
+        CreateDefaultModel;
 
     public Func<ImageNamingPreferences, IForTalkingWithModel, IForRenamingImage> RenamerFactory { get; init; } =
-        static (preferences, model) => new ImageRenamer(
+        CreateDefaultRenamer;
+
+    public static ImageRenameCliDependencies Default { get; } = new();
+
+    private static IForTalkingWithModel CreateDefaultModel(ImageNamingPreferences preferences)
+    {
+        return OllamaAgentFactory.Create(preferences);
+    }
+
+    private static IForRenamingImage CreateDefaultRenamer(
+        ImageNamingPreferences preferences,
+        IForTalkingWithModel model)
+    {
+        return new ImageRenamer(
             new FileOperator(),
             model,
             new ImageNameFormatter(),
             preferences);
-
-    public static ImageRenameCliDependencies Default { get; } = new();
+    }
 }

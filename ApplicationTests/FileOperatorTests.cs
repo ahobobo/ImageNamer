@@ -1,5 +1,6 @@
 using Application.Models;
 using Infrastructure.ForReadingImages;
+using TestsShared;
 
 namespace ApplicationTests;
 
@@ -8,9 +9,9 @@ public class FileOperatorTests
     [Test]
     public void RenameFile_UsesRequestedFinalFilenameWithoutForcingLowercase()
     {
-        string root = CreateTempDirectory();
-        string sourcePath = Path.Combine(root, "original.webp");
-        string expectedPath = Path.Combine(root, "NewName.webp");
+        using var temp = new TemporaryDirectory();
+        string sourcePath = Path.Combine(temp.Path, "original.webp");
+        string expectedPath = Path.Combine(temp.Path, "NewName.webp");
 
         File.WriteAllBytes(sourcePath, [1, 2, 3, 4]);
 
@@ -18,24 +19,17 @@ public class FileOperatorTests
         var renamed = new ImageFile("NewName.webp", ".webp", sourcePath, string.Empty);
         var sut = new FileOperator();
 
-        try
-        {
-            sut.RenameFile(original, renamed);
+        sut.RenameFile(original, renamed);
 
-            Assert.That(File.Exists(expectedPath), Is.True);
-            Assert.That(File.Exists(sourcePath), Is.False);
-        }
-        finally
-        {
-            Directory.Delete(root, true);
-        }
+        Assert.That(File.Exists(expectedPath), Is.True);
+        Assert.That(File.Exists(sourcePath), Is.False);
     }
 
     [Test]
     public void RenameFile_LeavesSamePathInPlace()
     {
-        string root = CreateTempDirectory();
-        string sourcePath = Path.Combine(root, "alreadylower.webp");
+        using var temp = new TemporaryDirectory();
+        string sourcePath = Path.Combine(temp.Path, "alreadylower.webp");
 
         File.WriteAllBytes(sourcePath, [1, 2, 3, 4]);
 
@@ -43,26 +37,19 @@ public class FileOperatorTests
         var renamed = new ImageFile("alreadylower.webp", ".webp", sourcePath, string.Empty);
         var sut = new FileOperator();
 
-        try
-        {
-            sut.RenameFile(original, renamed);
+        sut.RenameFile(original, renamed);
 
-            Assert.That(File.Exists(sourcePath), Is.True);
-        }
-        finally
-        {
-            Directory.Delete(root, true);
-        }
+        Assert.That(File.Exists(sourcePath), Is.True);
     }
 
     [Test]
     public void RenameFile_HandlesCollisionsByAppendingNumber()
     {
-        string root = CreateTempDirectory();
-        string sourcePath = Path.Combine(root, "image.webp");
-        string existingPath1 = Path.Combine(root, "newname.webp");
-        string existingPath2 = Path.Combine(root, "newname 1.webp");
-        string expectedPath = Path.Combine(root, "newname 2.webp");
+        using var temp = new TemporaryDirectory();
+        string sourcePath = Path.Combine(temp.Path, "image.webp");
+        string existingPath1 = Path.Combine(temp.Path, "newname.webp");
+        string existingPath2 = Path.Combine(temp.Path, "newname 1.webp");
+        string expectedPath = Path.Combine(temp.Path, "newname 2.webp");
 
         File.WriteAllBytes(sourcePath, [1, 2, 3, 4]);
         File.WriteAllBytes(existingPath1, [5, 6, 7, 8]);
@@ -72,25 +59,11 @@ public class FileOperatorTests
         var renamed = new ImageFile("newname.webp", ".webp", sourcePath, string.Empty);
         var sut = new FileOperator();
 
-        try
-        {
-            sut.RenameFile(original, renamed);
+        sut.RenameFile(original, renamed);
 
-            Assert.That(File.Exists(expectedPath), Is.True);
-            Assert.That(File.Exists(sourcePath), Is.False);
-            Assert.That(File.Exists(existingPath1), Is.True);
-            Assert.That(File.Exists(existingPath2), Is.True);
-        }
-        finally
-        {
-            Directory.Delete(root, true);
-        }
-    }
-
-    private static string CreateTempDirectory()
-    {
-        string root = Path.Combine(Path.GetTempPath(), "ImageNamerTests", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(root);
-        return root;
+        Assert.That(File.Exists(expectedPath), Is.True);
+        Assert.That(File.Exists(sourcePath), Is.False);
+        Assert.That(File.Exists(existingPath1), Is.True);
+        Assert.That(File.Exists(existingPath2), Is.True);
     }
 }
