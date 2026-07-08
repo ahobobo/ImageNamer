@@ -5,24 +5,12 @@ namespace E2ETests;
 public abstract class E2ETestBase
 {
     protected TemporaryWorkingDirectory TempDir { get; private set; } = null!;
-    protected string TestDataPath { get; private set; } = null!;
 
     [SetUp]
     public void SetUp()
     {
         TempDir = new TemporaryWorkingDirectory();
-
-        // Find project root by looking for ImageNamer.slnx
-        string current = AppContext.BaseDirectory;
-        while (!File.Exists(Path.Combine(current, "ImageNamer.slnx")))
-        {
-            current = Path.GetDirectoryName(current) ?? throw new Exception("Could not find project root.");
-        }
-        
-        TestDataPath = Path.Combine(current, "TestData");
-        
-        // Copy TestData to TempDir
-        CopyDirectory(TestDataPath, TempDir.Path);
+        CopyDirectory(RepositoryPaths.TestDataDirectory, TempDir.Path);
     }
 
     private static void CopyDirectory(string sourceDir, string destinationDir)

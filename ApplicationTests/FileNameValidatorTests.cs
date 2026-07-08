@@ -1,4 +1,4 @@
-using Infrastructure.Validation;
+using Application.Validation;
 
 namespace ApplicationTests;
 

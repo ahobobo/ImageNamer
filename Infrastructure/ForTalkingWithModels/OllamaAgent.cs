@@ -18,7 +18,7 @@ public class OllamaAgent : IForTalkingWithModel
 
     private readonly IOllamaChatTransport _chatTransport;
 
-    public OllamaAgent(IOllamaChatTransport chatTransport, IForValidatingFileNames fileNameValidator)
+    public OllamaAgent(IOllamaChatTransport chatTransport)
     {
         _chatTransport = chatTransport;
     }

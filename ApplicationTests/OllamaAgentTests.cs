@@ -1,8 +1,6 @@
 using Application.Models;
 using Application.Ports.Driven;
-using Infrastructure.ForReadingImages;
 using Infrastructure.ForTalkingWithModels;
-using Infrastructure.Validation;
 
 namespace ApplicationTests;
 
@@ -11,10 +9,9 @@ public class OllamaAgentTests
     [Test]
     public async Task GetNewImageNameAsync_ReturnsModelFilenameWithoutPunctuationRetry()
     {
-        var stubFileOperator = new StubFileOperator();
-        ImageFile originalImage = stubFileOperator.ReadFile("ignored");
+        ImageFile originalImage = TestImageFile.Read("Bellwether_Zootopia.webp");
         var transport = new RecordingOllamaChatTransport("Bellwether - Zootopia!.webp");
-        var sut = new OllamaAgent(transport, new FileNameValidator());
+        var sut = new OllamaAgent(transport);
 
         ImageFile renamedImage = await sut.GetNewImageNameAsync(originalImage);
 

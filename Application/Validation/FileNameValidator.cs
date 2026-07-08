@@ -1,6 +1,6 @@
 using Application.Ports.Driven;
 
-namespace Infrastructure.Validation;
+namespace Application.Validation;
 
 public sealed class FileNameValidator : IForValidatingFileNames
 {

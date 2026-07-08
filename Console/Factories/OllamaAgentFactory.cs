@@ -1,7 +1,6 @@
 using Application.Models;
 using Infrastructure.ForTalkingWithModels;
 using Infrastructure.Transport;
-using Infrastructure.Validation;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
 
@@ -23,8 +22,6 @@ public static class OllamaAgentFactory
 
         IChatClient client = chatClientFactory(uri, modelName);
 
-        return new OllamaAgent(
-            new OllamaChatTransport(client),
-            new FileNameValidator());
+        return new OllamaAgent(new OllamaChatTransport(client));
     }
 }
