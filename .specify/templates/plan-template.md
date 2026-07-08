@@ -40,7 +40,22 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- **Maintainable Architecture**: Boundaries between console, application,
+  infrastructure, and tests are preserved; dependencies point toward application
+  abstractions.
+- **Testable Behavior**: Plan names the required test level, target test
+  project(s), deterministic test strategy, and behavior covered by tests.
+- **Readable Code**: Plan avoids unnecessary abstractions and identifies any
+  complex logic that needs decomposition or rationale.
+- **Explicit Quality Gates**: Plan lists exact build, test, and validation
+  commands required before completion.
+- **Minimal, Reviewable Change**: Scope is limited to the requested behavior;
+  unrelated refactors, formatting churn, and dependency changes are justified
+  only when required.
+- **Vertical Slice Delivery**: Feature phases are planned as user-visible slices
+  that flow from the outer boundary through application/service logic to data or
+  infrastructure concerns, with unit tests along the way and a full-slice
+  integration test at the end.
 
 ## Project Structure
 

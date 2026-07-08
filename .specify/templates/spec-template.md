@@ -83,6 +83,7 @@
 <!--
   ACTION REQUIRED: The content in this section represents placeholders.
   Fill them out with the right functional requirements.
+  Requirements must be concrete enough to drive deterministic automated tests.
 -->
 
 ### Functional Requirements
@@ -116,6 +117,13 @@
 - **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
 - **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
 - **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+
+## Test Expectations *(mandatory)*
+
+- **TE-001**: [Primary automated test level, e.g., unit, integration, contract, or end-to-end]
+- **TE-002**: [Critical success-path behavior that must be covered]
+- **TE-003**: [Critical failure or edge-case behavior that must be covered]
+- **TE-004**: [Required deterministic setup, fixture, fake, or isolation constraint]
 
 ## Assumptions
 
