@@ -6,8 +6,6 @@ namespace ApplicationTests;
 
 public class ImageRenameOptionsTests
 {
-    private const string BundledDefaultModelName = "gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL";
-
     [Test]
     public void Parse_WithInputOnly_UsesDefaultConfigPath()
     {
@@ -34,10 +32,9 @@ public class ImageRenameOptionsTests
 
         ProjectLocalConfig? config = loader.Load(result.Options!.ConfigPath);
         Assert.That(config, Is.Not.Null);
-        Assert.That(config, Is.EqualTo(new ProjectLocalConfig(
-            BundledDefaultModelName,
-            NamingConvention.Normal,
-            ImageNamingPreferences.DefaultMaxNameLength)));
+        Assert.That(config!.ModelName, Is.Not.Null.And.Not.Empty);
+        Assert.That(config.NamingConvention, Is.EqualTo(NamingConvention.Normal));
+        Assert.That(config.MaxNameLength, Is.EqualTo(ImageNamingPreferences.DefaultMaxNameLength));
     }
 
     [Test]

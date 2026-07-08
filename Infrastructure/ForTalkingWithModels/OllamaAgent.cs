@@ -46,7 +46,10 @@ public class OllamaAgent : IForTalkingWithModel
 
     private async Task<string> GetRawGeneratedNameAsync(ImageFile originalImageFile, string prompt)
     {
-        var response = _chatTransport.SendAsync(Instructions, prompt, [originalImageFile.Base64Content]);
+        var response = _chatTransport.SendAsync(
+            Instructions,
+            prompt,
+            [new ModelImageContent(originalImageFile.Base64Content, originalImageFile.MimeType)]);
         var generatedName = new StringBuilder();
 
         await foreach (var token in response)

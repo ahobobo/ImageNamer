@@ -14,7 +14,8 @@ public class ImageRenamerTests
             "original.webp",
             ".webp",
             @"C:\images\original.webp",
-            Convert.ToBase64String(new byte[] { 1, 2, 3, 4 }));
+            Convert.ToBase64String(new byte[] { 1, 2, 3, 4 }),
+            "image/webp");
 
         var fileStore = new RecordingFileStore(originalFile);
         var model = new RecordingModel(originalFile with { Name = "red sunset beach photo.webp" });

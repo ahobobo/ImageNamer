@@ -1,4 +1,5 @@
 using Application.Ports.Driven;
+using Application.Models;
 using Microsoft.Extensions.AI;
 
 namespace Infrastructure.Transport;
@@ -12,12 +13,18 @@ public sealed class OllamaChatTransport : IOllamaChatTransport
         _chatClient = chatClient;
     }
 
-    public IAsyncEnumerable<string> SendAsync(string systemInstructions, string prompt, IReadOnlyList<string> images)
+    public IAsyncEnumerable<string> SendAsync(
+        string systemInstructions,
+        string prompt,
+        IReadOnlyList<ModelImageContent> images)
     {
         return SendInternalAsync(systemInstructions, prompt, images);
     }
 
-    private async IAsyncEnumerable<string> SendInternalAsync(string systemInstructions, string prompt, IReadOnlyList<string> images)
+    private async IAsyncEnumerable<string> SendInternalAsync(
+        string systemInstructions,
+        string prompt,
+        IReadOnlyList<ModelImageContent> images)
     {
         var messages = new List<ChatMessage>
         {
@@ -25,10 +32,10 @@ public sealed class OllamaChatTransport : IOllamaChatTransport
             new(ChatRole.User, prompt)
         };
 
-        foreach (var imageBase64 in images)
+        foreach (var image in images)
         {
-            byte[] bytes = Convert.FromBase64String(imageBase64);
-            messages.Last().Contents.Add(new DataContent(bytes, "image/png"));
+            byte[] bytes = Convert.FromBase64String(image.Base64Content);
+            messages.Last().Contents.Add(new DataContent(bytes.AsMemory(), image.MimeType));
         }
 
         await foreach (var update in _chatClient.GetStreamingResponseAsync(messages))

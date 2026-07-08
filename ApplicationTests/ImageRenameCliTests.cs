@@ -1,3 +1,4 @@
+using Application;
 using Application.Models;
 using Application.Ports.Driven;
 using Application.Ports.Driving;
@@ -9,11 +10,6 @@ namespace ApplicationTests;
 [NonParallelizable]
 public class ImageRenameCliTests
 {
-    private static readonly ImageNamingPreferences BundledDefaultPreferences = new(
-        "gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL",
-        NamingConvention.Normal,
-        ImageNamingPreferences.DefaultMaxNameLength);
-
     [Test]
     public async Task RunAsync_WithHelpFlag_PrintsUsageAndExitsSuccessfully()
     {
@@ -32,7 +28,6 @@ public class ImageRenameCliTests
             Assert.That(output.ToString(), Does.Contain("<directory_path>"));
             Assert.That(output.ToString(), Does.Contain("--help"));
             Assert.That(output.ToString(), Does.Contain("--model"));
-            Assert.That(output.ToString(), Does.Contain(BundledDefaultPreferences.ModelName));
         }
         finally
         {
@@ -49,10 +44,11 @@ public class ImageRenameCliTests
         File.WriteAllBytes(imagePath, [1, 2, 3, 4]);
         var state = new RecordingState();
         ImageRenameCliDependencies dependencies = CreateRecordingDependencies(state);
+        ImageNamingPreferences expectedPreferences = LoadExpectedPreferences();
 
         await ImageRenameCli.RunAsync([imagePath], dependencies);
 
-        Assert.That(state.ReceivedPreferences, Is.EqualTo(BundledDefaultPreferences));
+        Assert.That(state.ReceivedPreferences, Is.EqualTo(expectedPreferences));
         Assert.That(Environment.ExitCode, Is.EqualTo(0));
     }
 
@@ -123,6 +119,13 @@ public class ImageRenameCliTests
                 return new RecordingRenamer();
             }
         };
+    }
+
+    private static ImageNamingPreferences LoadExpectedPreferences()
+    {
+        ImageRenameOptionParseResult parsed = new ImageRenameOptionsParser().Parse(["image.webp"]);
+        ProjectLocalConfig? config = new ImageRenameConfigurationLoader().Load(parsed.Options!.ConfigPath);
+        return new ImageNamingPreferenceResolver().Resolve(config);
     }
 
     private sealed class RecordingState

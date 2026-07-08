@@ -27,8 +27,9 @@ public class FileOperator : IForInteractingWithFile
 
         string fileName = Path.GetFileName(path);
         string base64Content = Convert.ToBase64String(imageBytes);
+        string mimeType = GetMimeType(extension);
 
-        return new ImageFile(fileName, extension, path, base64Content);
+        return new ImageFile(fileName, extension, path, base64Content, mimeType);
     }
 
     public string RenameFile(ImageFile originalFile, ImageFile renamedFile)
@@ -74,5 +75,18 @@ public class FileOperator : IForInteractingWithFile
 
         File.Move(originalFile.Path, newPath);
         return newPath;
+    }
+
+    private static string GetMimeType(string extension)
+    {
+        return extension switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".bmp" => "image/bmp",
+            ".webp" => "image/webp",
+            _ => throw new NotSupportedException($"File extension '{extension}' is not supported as an image.")
+        };
     }
 }

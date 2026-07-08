@@ -18,7 +18,9 @@ public class OllamaAgentTests
         Assert.That(transport.Requests, Has.Count.EqualTo(1));
         Assert.That(transport.Requests[0].SystemInstructions, Is.EqualTo(OllamaAgent.Instructions));
         Assert.That(transport.Requests[0].Prompt, Is.EqualTo($"Original filename: {originalImage.Name}"));
-        Assert.That(transport.Requests[0].Images, Is.EqualTo(new[] { originalImage.Base64Content }));
+        Assert.That(
+            transport.Requests[0].Images,
+            Is.EqualTo(new[] { new ModelImageContent(originalImage.Base64Content, originalImage.MimeType) }));
         Assert.That(renamedImage.Name, Is.EqualTo("Bellwether - Zootopia!.webp"));
     }
 
@@ -33,7 +35,10 @@ public class OllamaAgentTests
 
         public List<RecordedRequest> Requests { get; } = [];
 
-        public IAsyncEnumerable<string> SendAsync(string systemInstructions, string prompt, IReadOnlyList<string> images)
+        public IAsyncEnumerable<string> SendAsync(
+            string systemInstructions,
+            string prompt,
+            IReadOnlyList<ModelImageContent> images)
         {
             Requests.Add(new RecordedRequest(systemInstructions, prompt, images.ToArray()));
 
@@ -56,5 +61,8 @@ public class OllamaAgentTests
         }
     }
 
-    private sealed record RecordedRequest(string SystemInstructions, string Prompt, string[] Images);
+    private sealed record RecordedRequest(
+        string SystemInstructions,
+        string Prompt,
+        ModelImageContent[] Images);
 }

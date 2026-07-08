@@ -1,3 +1,4 @@
+using Application.Models;
 using Infrastructure.Transport;
 
 namespace ApplicationTests;
@@ -10,7 +11,7 @@ public class OllamaChatTransportTests
         var sut = new OllamaChatTransport(null!);
 
         Assert.That(
-            () => sut.SendAsync("custom instructions", "prompt", Array.Empty<string>()),
+            () => sut.SendAsync("custom instructions", "prompt", Array.Empty<ModelImageContent>()),
             Throws.Nothing);
     }
 }
