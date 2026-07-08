@@ -9,6 +9,11 @@ namespace ApplicationTests;
 [NonParallelizable]
 public class ImageRenameCliTests
 {
+    private static readonly ImageNamingPreferences BundledDefaultPreferences = new(
+        "gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL",
+        NamingConvention.Normal,
+        ImageNamingPreferences.DefaultMaxNameLength);
+
     [Test]
     public async Task RunAsync_WithHelpFlag_PrintsUsageAndExitsSuccessfully()
     {
@@ -27,7 +32,7 @@ public class ImageRenameCliTests
             Assert.That(output.ToString(), Does.Contain("<directory_path>"));
             Assert.That(output.ToString(), Does.Contain("--help"));
             Assert.That(output.ToString(), Does.Contain("--model"));
-            Assert.That(output.ToString(), Does.Contain("gemma4:e2b"));
+            Assert.That(output.ToString(), Does.Contain(BundledDefaultPreferences.ModelName));
         }
         finally
         {
@@ -37,7 +42,7 @@ public class ImageRenameCliTests
     }
 
     [Test]
-    public async Task RunAsync_WithMissingConfig_UsesDefaults()
+    public async Task RunAsync_WithMissingConfig_UsesBundledDefaultConfig()
     {
         using var temp = new TemporaryWorkingDirectory();
         string imagePath = Path.Combine(temp.Path, "image.webp");
@@ -47,7 +52,7 @@ public class ImageRenameCliTests
 
         await ImageRenameCli.RunAsync([imagePath], dependencies);
 
-        Assert.That(state.ReceivedPreferences, Is.EqualTo(ImageNamingPreferences.Defaults));
+        Assert.That(state.ReceivedPreferences, Is.EqualTo(BundledDefaultPreferences));
         Assert.That(Environment.ExitCode, Is.EqualTo(0));
     }
 

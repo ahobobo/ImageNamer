@@ -77,7 +77,7 @@ public static class ImageRenameCli
 
             Defaults:
               Config path: imagenamer.json in the current working directory, then bundled project default
-              Model: gemma4:e2b
+              Model: gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL
               Naming: normal
               Max length: 20
 

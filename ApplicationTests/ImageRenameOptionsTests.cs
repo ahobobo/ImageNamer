@@ -6,6 +6,8 @@ namespace ApplicationTests;
 
 public class ImageRenameOptionsTests
 {
+    private const string BundledDefaultModelName = "gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL";
+
     [Test]
     public void Parse_WithInputOnly_UsesDefaultConfigPath()
     {
@@ -19,6 +21,23 @@ public class ImageRenameOptionsTests
         Assert.That(
             Path.GetFileName(result.Options.ConfigPath),
             Is.EqualTo(ImageRenameOptionsParser.BundledDefaultConfigFileName));
+    }
+
+    [Test]
+    public void Parse_WithInputOnly_LoadsBundledDefaultConfig()
+    {
+        using var temp = new TemporaryWorkingDirectory();
+        var parser = new ImageRenameOptionsParser();
+        var loader = new ImageRenameConfigurationLoader();
+
+        ImageRenameOptionParseResult result = parser.Parse(["image.webp"]);
+
+        ProjectLocalConfig? config = loader.Load(result.Options!.ConfigPath);
+        Assert.That(config, Is.Not.Null);
+        Assert.That(config, Is.EqualTo(new ProjectLocalConfig(
+            BundledDefaultModelName,
+            NamingConvention.Normal,
+            ImageNamingPreferences.DefaultMaxNameLength)));
     }
 
     [Test]

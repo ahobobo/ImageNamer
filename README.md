@@ -20,7 +20,7 @@ You give it either a single image file or a directory. If you pass a directory, 
 - Applies the configured naming convention before saving it.
 - Continues processing even if one file fails.
 
-By default, the app uses model `gemma4:e2b`, naming convention `normal`, and maximum filename stem length `20`.
+By default, the app uses model `gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL`, naming convention `normal`, and maximum filename stem length `20`.
 
 ## Requirements
 
@@ -28,14 +28,14 @@ Before running the app, install and configure:
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [Ollama](https://ollama.com/)
-- The default Ollama model used by the app: `gemma4:e2b`
+- The default Ollama model used by the app: `gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL`
 
 The app connects to Ollama at `http://localhost:11434`, so Ollama must be running locally when you launch the CLI.
 
 If you have not already pulled the model, run:
 
 ```powershell
-ollama pull gemma4:e2b
+ollama pull gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL
 ```
 
 ## How To Run
@@ -84,7 +84,7 @@ ImageNamer includes a bundled default config at `Console/imagenamer.default.json
 
 ```json
 {
-  "model": "gemma4:e2b",
+  "model": "gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL",
   "naming": "snake",
   "maxLength": 40
 }
