@@ -80,7 +80,7 @@ dotnet run --project .\Console\Console.csproj -- .\TestData --model llava:latest
 
 ### Project-Local Configuration
 
-If `imagenamer.json` exists in the directory where you run the app, ImageNamer uses it for saved project-local defaults:
+ImageNamer includes a bundled default config at `Console/imagenamer.default.json`. If `imagenamer.json` exists in the directory where you run the app, ImageNamer uses that project-local file instead:
 
 ```json
 {

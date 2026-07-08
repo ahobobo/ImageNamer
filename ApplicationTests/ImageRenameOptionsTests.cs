@@ -16,7 +16,22 @@ public class ImageRenameOptionsTests
 
         Assert.That(result.ErrorMessage, Is.Null);
         Assert.That(result.Options!.InputPath, Is.EqualTo("image.webp"));
-        Assert.That(result.Options.ConfigPath, Is.EqualTo(temp.ConfigPath));
+        Assert.That(
+            Path.GetFileName(result.Options.ConfigPath),
+            Is.EqualTo(ImageRenameOptionsParser.BundledDefaultConfigFileName));
+    }
+
+    [Test]
+    public void Parse_WithProjectLocalConfig_UsesCurrentWorkingDirectoryConfig()
+    {
+        using var temp = new TemporaryWorkingDirectory();
+        temp.WriteConfig("""{ "naming": "snake" }""");
+        var sut = new ImageRenameOptionsParser();
+
+        ImageRenameOptionParseResult result = sut.Parse(["image.webp"]);
+
+        Assert.That(result.ErrorMessage, Is.Null);
+        Assert.That(result.Options!.ConfigPath, Is.EqualTo(temp.ConfigPath));
     }
 
     [Test]

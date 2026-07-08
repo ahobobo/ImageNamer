@@ -5,6 +5,7 @@ namespace ImageNamer.Cli;
 public sealed class ImageRenameOptionsParser
 {
     public const string DefaultConfigFileName = "imagenamer.json";
+    public const string BundledDefaultConfigFileName = "imagenamer.default.json";
 
     private static readonly IReadOnlyDictionary<string, NamingConvention> NamingConventionAliases =
         new Dictionary<string, NamingConvention>(StringComparer.OrdinalIgnoreCase)
@@ -201,13 +202,50 @@ public sealed class ImageRenameOptionsParser
     {
         public string? InputPath { get; set; }
 
-        public string ConfigPath { get; set; } =
-            Path.Combine(Environment.CurrentDirectory, DefaultConfigFileName);
+        public string ConfigPath { get; set; } = ResolveDefaultConfigPath();
 
         public string? ModelName { get; set; }
 
         public NamingConvention? NamingConvention { get; set; }
 
         public int? MaxNameLength { get; set; }
+    }
+
+    private static string ResolveDefaultConfigPath()
+    {
+        string projectLocalPath = Path.Combine(Environment.CurrentDirectory, DefaultConfigFileName);
+        if (File.Exists(projectLocalPath))
+        {
+            return projectLocalPath;
+        }
+
+        string? bundledDefaultPath = FindBundledDefaultConfigPath(AppContext.BaseDirectory)
+            ?? FindBundledDefaultConfigPath(Environment.CurrentDirectory);
+
+        return bundledDefaultPath ?? projectLocalPath;
+    }
+
+    private static string? FindBundledDefaultConfigPath(string startDirectory)
+    {
+        var directory = new DirectoryInfo(startDirectory);
+
+        while (directory is not null)
+        {
+            string directPath = Path.Combine(directory.FullName, BundledDefaultConfigFileName);
+            if (File.Exists(directPath))
+            {
+                return directPath;
+            }
+
+            string projectPath = Path.Combine(directory.FullName, "Console", BundledDefaultConfigFileName);
+            if (File.Exists(projectPath))
+            {
+                return projectPath;
+            }
+
+            directory = directory.Parent;
+        }
+
+        return null;
     }
 }

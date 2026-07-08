@@ -1,0 +1,5 @@
+{
+  "model": "gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL",
+  "naming": "normal",
+  "maxLength": 20
+}

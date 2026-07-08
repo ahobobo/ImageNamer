@@ -73,10 +73,10 @@ public static class ImageRenameCli
               --model <name>          Override the Ollama model for this run.
               --naming <value>        Override naming convention: {0}.
               --max-length <number>   Override the maximum filename stem length.
-              --config <path>         Use a project-local config file instead of imagenamer.json.
+              --config <path>         Use a project-local config file instead of the default config.
 
             Defaults:
-              Config path: imagenamer.json in the current working directory
+              Config path: imagenamer.json in the current working directory, then bundled project default
               Model: gemma4:e2b
               Naming: normal
               Max length: 20
