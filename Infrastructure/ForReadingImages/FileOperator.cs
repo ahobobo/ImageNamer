@@ -1,5 +1,6 @@
 using Application.Models;
 using Application.Ports.Driven;
+using SkiaSharp;
 
 namespace Infrastructure.ForReadingImages;
 
@@ -26,10 +27,16 @@ public class FileOperator : IForInteractingWithFile
         }
 
         string fileName = Path.GetFileName(path);
-        string base64Content = Convert.ToBase64String(imageBytes);
-        string mimeType = GetMimeType(extension);
+        var preparedPayload = PrepareModelPayload(imageBytes, extension);
+        string base64Content = Convert.ToBase64String(preparedPayload.Bytes);
 
-        return new ImageFile(fileName, extension, path, base64Content, mimeType);
+        return new ImageFile(
+            fileName,
+            extension,
+            path,
+            base64Content,
+            preparedPayload.MimeType,
+            preparedPayload.WasConverted);
     }
 
     public string RenameFile(ImageFile originalFile, ImageFile renamedFile)
@@ -89,4 +96,41 @@ public class FileOperator : IForInteractingWithFile
             _ => throw new NotSupportedException($"File extension '{extension}' is not supported as an image.")
         };
     }
+
+    private static PreparedPayload PrepareModelPayload(byte[] imageBytes, string extension)
+    {
+        if (!string.Equals(extension, ".webp", StringComparison.OrdinalIgnoreCase))
+        {
+            return new PreparedPayload(imageBytes, GetMimeType(extension), false);
+        }
+
+        SKBitmap? bitmap;
+
+        try
+        {
+            bitmap = SKBitmap.Decode(imageBytes);
+        }
+        catch (ArgumentNullException ex)
+        {
+            throw new InvalidDataException("WEBP image could not be decoded for model compatibility.", ex);
+        }
+
+        if (bitmap is null)
+        {
+            throw new InvalidDataException("WEBP image could not be decoded for model compatibility.");
+        }
+
+        using (bitmap)
+        {
+            using SKData? encodedImage = bitmap.Encode(SKEncodedImageFormat.Png, quality: 100);
+            if (encodedImage is null)
+            {
+                throw new InvalidDataException("WEBP image could not be encoded as PNG for model compatibility.");
+            }
+
+            return new PreparedPayload(encodedImage.ToArray(), "image/png", true);
+        }
+    }
+
+    private sealed record PreparedPayload(byte[] Bytes, string MimeType, bool WasConverted);
 }

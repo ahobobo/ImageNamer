@@ -7,6 +7,31 @@ namespace ApplicationTests;
 public class FileOperatorTests
 {
     [Test]
+    public void ReadFile_ConvertsWebpPayloadToPngWhilePreservingSourceExtension()
+    {
+        var sut = new FileOperator();
+
+        ImageFile result = sut.ReadFile(TestImageFile.GetPath("Bellwether_Zootopia.webp"));
+
+        Assert.That(result.Extension, Is.EqualTo(".webp"));
+        Assert.That(result.MimeType, Is.EqualTo("image/png"));
+        Assert.That(result.ModelPayloadWasConverted, Is.True);
+
+        byte[] payloadBytes = Convert.FromBase64String(result.Base64Content);
+        Assert.That(payloadBytes.Take(8).ToArray(), Is.EqualTo(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 }));
+    }
+
+    [Test]
+    public void ReadFile_ThrowsClearErrorForInvalidWebp()
+    {
+        var sut = new FileOperator();
+
+        var ex = Assert.Throws<InvalidDataException>(() => sut.ReadFile(TestImageFile.GetPath("InvalidImage.webp")));
+
+        Assert.That(ex!.Message, Does.Contain("WEBP"));
+    }
+
+    [Test]
     public void RenameFile_UsesRequestedFinalFilenameWithoutForcingLowercase()
     {
         using var temp = new TemporaryDirectory();
@@ -67,13 +92,12 @@ public class FileOperatorTests
         Assert.That(File.Exists(existingPath2), Is.True);
     }
 
-    [TestCase("image.webp", "image/webp")]
     [TestCase("image.jpg", "image/jpeg")]
     [TestCase("image.jpeg", "image/jpeg")]
     [TestCase("image.png", "image/png")]
     [TestCase("image.gif", "image/gif")]
     [TestCase("image.bmp", "image/bmp")]
-    public void ReadFile_SetsMimeTypeFromExtension(string fileName, string expectedMimeType)
+    public void ReadFile_LeavesNonWebpMimeTypeUnchanged(string fileName, string expectedMimeType)
     {
         using var temp = new TemporaryDirectory();
         string sourcePath = Path.Combine(temp.Path, fileName);
@@ -83,5 +107,6 @@ public class FileOperatorTests
         ImageFile result = sut.ReadFile(sourcePath);
 
         Assert.That(result.MimeType, Is.EqualTo(expectedMimeType));
+        Assert.That(result.ModelPayloadWasConverted, Is.False);
     }
 }

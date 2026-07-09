@@ -6,11 +6,8 @@ namespace Application.Models
         string Extension,
         string Path,
         string Base64Content,
-        string MimeType);
+        string MimeType,
+        bool ModelPayloadWasConverted = false);
 
     public record class ModelImageContent(string Base64Content, string MimeType);
-
-
-
-
 }

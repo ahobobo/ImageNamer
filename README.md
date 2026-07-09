@@ -14,6 +14,7 @@ You give it either a single image file or a directory. If you pass a directory, 
   - `.gif`
   - `.bmp`
   - `.webp`
+- Converts `.webp` images to PNG in memory before sending them to Ollama, while keeping the original `.webp` file on disk.
 - Processes directories recursively.
 - Skips non-image files.
 - Renames files in the same folder as the original image.

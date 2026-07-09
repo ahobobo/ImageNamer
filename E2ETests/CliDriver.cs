@@ -6,7 +6,9 @@ namespace TestsShared;
 
 public static class CliDriver
 {
-    public static async Task<(int ExitCode, string Output, string Error)> RunAsync(string[] args)
+    public static async Task<(int ExitCode, string Output, string Error)> RunAsync(
+        string[] args,
+        DeterministicModel? model = null)
     {
         var output = new StringWriter();
         var error = new StringWriter();
@@ -22,7 +24,7 @@ public static class CliDriver
 
             await ImageRenameCli.RunAsync(args, new ImageRenameCliDependencies
             {
-                ModelFactory = static _ => new DeterministicModel()
+                ModelFactory = _ => model ?? new DeterministicModel()
             });
 
             return (Environment.ExitCode, output.ToString(), error.ToString());
@@ -35,10 +37,13 @@ public static class CliDriver
         }
     }
 
-    private sealed class DeterministicModel : IForTalkingWithModel
+    public sealed class DeterministicModel : IForTalkingWithModel
     {
+        public List<ImageFile> ReceivedImages { get; } = [];
+
         public Task<ImageFile> GetNewImageNameAsync(ImageFile originalImageFile)
         {
+            ReceivedImages.Add(originalImageFile);
             string extension = originalImageFile.Extension.StartsWith('.')
                 ? originalImageFile.Extension
                 : $".{originalImageFile.Extension}";

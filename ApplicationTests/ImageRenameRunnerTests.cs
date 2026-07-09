@@ -76,6 +76,30 @@ public class ImageRenameRunnerTests
     }
 
     [Test]
+    public async Task RunAsync_ContinuesAfterInvalidWebpFailureAndReportsError()
+    {
+        using var temp = new TemporaryDirectory();
+        string failingImage = Path.Combine(temp.Path, "a.webp");
+        string succeedingImage = Path.Combine(temp.Path, "b.png");
+
+        await File.WriteAllTextAsync(failingImage, "invalid webp");
+        await File.WriteAllTextAsync(succeedingImage, "valid png placeholder");
+
+        var output = new StringWriter();
+        var error = new StringWriter();
+        var renamer = new RecordingRenamer(failingImage);
+        var runner = new ImageRenameRunner(renamer);
+
+        ImageRenameRunResult result = await runner.RunAsync(temp.Path, output, error);
+
+        Assert.That(result.SuccessfulCount, Is.EqualTo(1));
+        Assert.That(result.FailureCount, Is.EqualTo(1));
+        Assert.That(renamer.ReceivedPaths, Is.EqualTo(new[] { failingImage, succeedingImage }));
+        Assert.That(error.ToString(), Does.Contain($"Error renaming {failingImage}: Rename failed."));
+        Assert.That(output.ToString(), Does.Contain($"Renamed {Path.GetFileName(succeedingImage)} to"));
+    }
+
+    [Test]
     public void GetUsageText_ExplainsFileAndDirectoryModes()
     {
         string usage = ImageRenameCli.GetUsageText();

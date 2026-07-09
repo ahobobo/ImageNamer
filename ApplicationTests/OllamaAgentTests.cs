@@ -7,9 +7,15 @@ namespace ApplicationTests;
 public class OllamaAgentTests
 {
     [Test]
-    public async Task GetNewImageNameAsync_ReturnsModelFilenameWithoutPunctuationRetry()
+    public async Task GetNewImageNameAsync_SendsConvertedWebpPayloadMetadataToTransport()
     {
-        ImageFile originalImage = TestImageFile.Read("Bellwether_Zootopia.webp");
+        ImageFile originalImage = new(
+            "Bellwether_Zootopia.webp",
+            ".webp",
+            @"C:\images\Bellwether_Zootopia.webp",
+            Convert.ToBase64String(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 }),
+            "image/png",
+            true);
         var transport = new RecordingOllamaChatTransport("Bellwether - Zootopia!.webp");
         var sut = new OllamaAgent(transport);
 
@@ -21,7 +27,23 @@ public class OllamaAgentTests
         Assert.That(
             transport.Requests[0].Images,
             Is.EqualTo(new[] { new ModelImageContent(originalImage.Base64Content, originalImage.MimeType) }));
+        Assert.That(originalImage.ModelPayloadWasConverted, Is.True);
         Assert.That(renamedImage.Name, Is.EqualTo("Bellwether - Zootopia!.webp"));
+    }
+
+    [Test]
+    public async Task GetNewImageNameAsync_LeavesNonWebpPayloadMetadataUnchanged()
+    {
+        ImageFile originalImage = TestImageFile.Read("recursive\\nested\\wp8078607.jpg");
+        var transport = new RecordingOllamaChatTransport("wp8078607.jpg");
+        var sut = new OllamaAgent(transport);
+
+        await sut.GetNewImageNameAsync(originalImage);
+
+        Assert.That(transport.Requests, Has.Count.EqualTo(1));
+        Assert.That(transport.Requests[0].Images, Has.Length.EqualTo(1));
+        Assert.That(transport.Requests[0].Images[0].MimeType, Is.EqualTo("image/jpeg"));
+        Assert.That(originalImage.ModelPayloadWasConverted, Is.False);
     }
 
     private sealed class RecordingOllamaChatTransport : IOllamaChatTransport

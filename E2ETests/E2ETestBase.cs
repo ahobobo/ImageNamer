@@ -11,6 +11,11 @@ public abstract class E2ETestBase
     {
         TempDir = new TemporaryWorkingDirectory();
         CopyDirectory(RepositoryPaths.TestDataDirectory, TempDir.Path);
+        string invalidFixturePath = Path.Combine(TempDir.Path, "InvalidImage.webp");
+        if (File.Exists(invalidFixturePath))
+        {
+            File.Delete(invalidFixturePath);
+        }
     }
 
     private static void CopyDirectory(string sourceDir, string destinationDir)

@@ -30,6 +30,28 @@ public class ImageRenamerTests
         Assert.That(fileStore.RenamedFile, Is.EqualTo(originalFile with { Name = "red-sunset-beach-photo.webp" }));
     }
 
+    [Test]
+    public async Task RenameImageAsync_PreservesOriginalWebpExtensionDuringRename()
+    {
+        var originalFile = new ImageFile(
+            "original.webp",
+            ".webp",
+            @"C:\images\original.webp",
+            Convert.ToBase64String(new byte[] { 1, 2, 3, 4 }),
+            "image/png",
+            true);
+
+        var fileStore = new RecordingFileStore(originalFile);
+        var model = new RecordingModel(originalFile with { Name = "converted-by-model.png", Extension = ".png" });
+        IForRenamingImage sut = new ImageRenamer(fileStore, model, new ImageNameFormatter(), ImageNamingPreferences.Defaults);
+
+        await sut.RenameImageAsync(originalFile.Path);
+
+        Assert.That(fileStore.RenamedFile, Is.Not.Null);
+        Assert.That(fileStore.RenamedFile!.Extension, Is.EqualTo(".webp"));
+        Assert.That(fileStore.RenamedFile.Name, Does.EndWith(".webp"));
+    }
+
     private sealed class RecordingFileStore : IForInteractingWithFile
     {
         private readonly ImageFile _file;

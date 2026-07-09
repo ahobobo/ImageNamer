@@ -89,6 +89,7 @@ StyleCopReport.xml
 *.tli
 *.tlh
 *.tmp
+*.swp
 *.tmp_proj
 *_wpftmp.csproj
 *.log
@@ -316,6 +317,10 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+.DS_Store
+Thumbs.db
+.idea/
+.env*
 
 # Cake - Uncomment if you are using it
 # tools/**

@@ -5,9 +5,14 @@ namespace ApplicationTests;
 
 internal static class TestImageFile
 {
+    public static string GetPath(string fileName)
+    {
+        return Path.Combine(RepositoryPaths.TestDataDirectory, fileName);
+    }
+
     public static ImageFile Read(string fileName)
     {
-        string testDataPath = Path.Combine(RepositoryPaths.TestDataDirectory, fileName);
+        string testDataPath = GetPath(fileName);
 
         byte[] imageBytes = File.ReadAllBytes(testDataPath);
         string base64Content = Convert.ToBase64String(imageBytes);
