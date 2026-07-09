@@ -1,5 +1,5 @@
 {
-  "model": "hf.co/unsloth/gemma-4-E4B-it-qat-GGUF:UD-Q4_K_XL",
+  "model": "hf.co/unsloth/gemma-4-E4B-it-qat-GGUF:Q4_0",
   "naming": "normal",
   "maxLength": 20
 }
